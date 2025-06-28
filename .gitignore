@@ -1,0 +1,80 @@
+# Miscellaneous
+*.class
+*.lock
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# Visual Studio Code
+.vscode/
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+.pub/
+.pub-cache/
+.packages
+pubspec.lock
+
+# Android
+android/key.properties
+android/local.properties
+android/app/build/
+android/.gradle/
+android/gradle/
+android/app/src/main/assets/flutter_assets/
+/android/app/google-services.json
+
+# iOS
+ios/build/
+ios/Pods/
+ios/Podfile.lock
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/engine.framework
+ios/Flutter/flutter_assets/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/Debug.xcconfig
+ios/Flutter/Release.xcconfig
+ios/Runner/GeneratedPluginRegistrant.*
+ios/Runner/Runner.xcodeproj/project.xcworkspace/
+ios/Runner/Runner.xcodeproj/xcuserdata/
+ios/Runner/GoogleService-Info.plist
+ios/firebase_app_id_file.json
+
+# Web
+web/build/
+web/dart_tool/
+
+# Windows
+windows/build/
+windows/flutter/ephemeral/
+windows/runner/Debug/
+windows/runner/Release/
+windows/runner/Profile/
+
+# Linux
+linux/build/
+linux/flutter/ephemeral/
+
+# macOS
+macos/build/
+macos/Flutter/ephemeral/
+macos/Pods/
+macos/podfile.lock
+macos/Runner.xcworkspace
+
+# FVM Version Cache
+.fvm/
