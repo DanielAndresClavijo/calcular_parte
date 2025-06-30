@@ -40,11 +40,33 @@ jobs:
       - name: Build web
         run: flutter build web --release --base-href /calcular_parte/
 
-      - name: Echo and Remove symlinks
+      - name: Remove symlinks and hard links
         run: |
-          echo "The following symlinks will be removed:"
-          find build/web -type l -exec echo {} +
-          find build/web -type l -exec rm -f {} +
+          echo "Checking for symlinks and hard links in build/web..."
+
+          # Encontrar y eliminar symlinks
+          SYMLINKS=$(find build/web -type l)
+          if [ -n "$SYMLINKS" ]; then
+            echo "Found symlinks. Removing them:"
+            echo "$SYMLINKS"
+            find build/web -type l -delete
+          else
+            echo "No symlinks found."
+          fi
+
+          # Comprobación adicional para asegurar que no quedan enlaces
+          if [ -n "$(find build/web -type l)" ]; then
+            echo "Warning: Some symlinks could not be removed!"
+          else
+            echo "All symlinks successfully removed."
+          fi
+
+          # Formato alternativo - Crear un archivo tar y extraerlo para eliminar enlaces
+          echo "Creating a clean copy without links..."
+          mkdir -p clean_build
+          tar -cf - -C build/web . | tar -xf - -C clean_build
+          rm -rf build/web
+          mv clean_build build/web
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
