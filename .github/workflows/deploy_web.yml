@@ -50,8 +50,7 @@ jobs:
       - name: Build and deploy with peanut
         run: |
           echo "Construyendo con peanut - este método evita symlinks automáticamente"
-          # Nota: pasamos web-renderer y base-href con --extra-args
-          flutter pub global run peanut --extra-args "--web-renderer canvaskit --base-href=/calcular_parte/" --message "Deploy Flutter web app to GitHub Pages"
+          flutter pub global run peanut --extra-args "--base-href=/calcular_parte/" --message "Deploy Flutter web app to GitHub Pages"
 
           echo "Verificando contenido generado por peanut"
           ls -la
