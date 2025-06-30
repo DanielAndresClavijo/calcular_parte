@@ -42,6 +42,12 @@ jobs:
       - name: Build Flutter Web
         run: flutter build web --release --base-href /calcular_parte/
 
+      - name: Update base href and script src in index.html
+        run: |
+          REPO_NAME=${{ github.repository }}
+          sed -i 's|href="|href="/calcular_parte/|g' build/web/index.html
+          sed -i 's|src="|src="/calcular_parte/|g' build/web/index.html
+
       - name: Echo and Remove symlinks
         run: |
           echo "The following symlinks will be removed:"
