@@ -1,4 +1,3 @@
-
 import 'package:carabineros/models/resume_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,23 +8,27 @@ import 'package:carabineros/models/seccion_data.dart';
 class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
   ReporteBloc() : super(ReporteInitial()) {
     on<AddSeccion>(_onAddSeccion);
-    on<RemoveSeccion>(_onRemoveSeccion);
+    on<RemoveMultipleSecciones>(_onRemoveMultipleSecciones);
     on<UpdateSeccion>(_onUpdateSeccion);
-    on<ClearAll>(_onClearAll);
   }
 
   void _onAddSeccion(AddSeccion event, Emitter<ReporteState> emit) {
     final newSecciones = List<SeccionData>.from(state.secciones)
       ..add(const SeccionData());
-    emit(ReporteUpdated(newSecciones, state.resumen));
+
+    final resumen = _calculateResumen(newSecciones);
+    emit(ReporteUpdated(newSecciones, resumen));
   }
 
-  void _onRemoveSeccion(RemoveSeccion event, Emitter<ReporteState> emit) {
-    if (state.secciones.length > 1) {
-      final newSecciones = List<SeccionData>.from(state.secciones)
-        ..removeAt(event.index);
-      emit(ReporteUpdated(newSecciones, state.resumen));
+  void _onRemoveMultipleSecciones(RemoveMultipleSecciones event, Emitter<ReporteState> emit) {
+    final newSecciones = List<SeccionData>.from(state.secciones);
+    final indicesToRemove = event.indices..sort((a, b) => b.compareTo(a));
+    for (final index in indicesToRemove) {
+      newSecciones.removeAt(index);
     }
+
+    final resumen = _calculateResumen(newSecciones);
+    emit(ReporteUpdated(newSecciones, resumen));
   }
 
   void _onUpdateSeccion(UpdateSeccion event, Emitter<ReporteState> emit) {
@@ -79,10 +82,6 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
       nv: totalNv.toString(),
     );
     return resumen;
-  }
-
-  void _onClearAll(ClearAll event, Emitter<ReporteState> emit) {
-    emit(ReporteInitial());
   }
 
   String getResumenText() {

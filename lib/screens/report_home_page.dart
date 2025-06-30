@@ -1,14 +1,19 @@
-import 'package:carabineros/models/resume_data.dart';
-import 'package:carabineros/models/seccion_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:carabineros/bloc/reporte_bloc.dart';
 import 'package:carabineros/bloc/reporte_event.dart';
 import 'package:carabineros/bloc/reporte_state.dart';
-import 'package:carabineros/widgets/seccion_widget.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:carabineros/models/resume_data.dart';
+import 'package:carabineros/models/seccion_data.dart';
+import 'package:carabineros/screens/report_detail_page.dart';
+import 'package:carabineros/theme/app_colors.dart';
+import 'package:carabineros/widgets/card_resumen_widget.dart';
+import 'package:carabineros/widgets/seccion_item_widget.dart';
+import 'package:carabineros/widgets/title_widget.dart';
 
 class ReportHomePage extends StatelessWidget {
   const ReportHomePage({super.key});
@@ -31,30 +36,54 @@ class ReportHomeView extends StatefulWidget {
   State<ReportHomeView> createState() => _ReportHomeViewState();
 }
 
-const double _minBottomSheetSize = 0.3;
 class _ReportHomeViewState extends State<ReportHomeView> {
-  final _pageController = PageController();
+  bool _isSelectionMode = false;
+  final Set<int> _selectedSections = {};
+  final _scrollController = ScrollController();
 
-  void _showDeleteConfirmation(int index) {
+  void _showDeleteConfirmation() {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Confirmar eliminación'),
-          content: const Text(
-            '¿Estás seguro de que quieres eliminar esta sección?',
+          backgroundColor: AppColors.white,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          content: Text(
+            '¿Estás seguro de que quieres eliminar ${_selectedSections.length} sección(es)?',
           ),
           actions: <Widget>[
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
               child: const Text('Cancelar'),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.error,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
               child: const Text('Eliminar'),
               onPressed: () {
-                context.read<ReporteBloc>().add(RemoveSeccion(index));
+                context.read<ReporteBloc>().add(
+                  RemoveMultipleSecciones(_selectedSections.toList()),
+                );
+                setState(() {
+                  _isSelectionMode = false;
+                  _selectedSections.clear();
+                });
                 Navigator.of(dialogContext).pop();
               },
             ),
@@ -66,270 +95,325 @@ class _ReportHomeViewState extends State<ReportHomeView> {
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final isSmallScreen = width < 600;
     final isKeyboardVisible = KeyboardVisibilityProvider.isKeyboardVisible(
       context,
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Escuela de carabineros'),
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Stack(
-            children: [
-              Positioned.fill(
-                bottom: !isKeyboardVisible
-                    ? constraints.maxHeight * _minBottomSheetSize
-                    : 0,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              final resumen = context
-                                  .read<ReporteBloc>()
-                                  .getResumenText();
-                              Clipboard.setData(ClipboardData(text: resumen));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Texto copiado al portapapeles',
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('Copiar'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () =>
-                                context.read<ReporteBloc>().add(ClearAll()),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('Limpiar'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () =>
-                                context.read<ReporteBloc>().add(AddSeccion()),
-                            child: const Text('Agregar Sección'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: BlocBuilder<ReporteBloc, ReporteState>(
-                        builder: (context, state) {
-                          if (isSmallScreen) {
-                            return PageView.builder(
-                              key: const Key('pageViewSections'),
-                              controller: _pageController,
-                              itemCount: state.secciones.length,
-                              itemBuilder: (context, index) =>
-                                  _buildSectionWidget(
-                                    context,
-                                    index,
-                                    state.secciones,
-                                  ),
-                            );
-                          }
+    final secciones = context.watch<ReporteBloc>().state.secciones;
 
-                          return ListView.builder(
-                            key: const Key('listViewSections'),
-                            itemCount: state.secciones.length,
-                            itemBuilder: (context, index) =>
-                                _buildSectionWidget(
-                                  context,
-                                  index,
-                                  state.secciones,
-                                ),
-                          );
-                        },
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: BlocListener<ReporteBloc, ReporteState>(
+                listenWhen: (previous, current) =>
+                    previous.secciones.length < current.secciones.length,
+                listener: (context, state) {
+                  _scrollController.animateTo(
+                    _scrollController.position.maxScrollExtent + 300,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                  );
+                },
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                    _buildAppBar(secciones.length),
+                    if (!_isSelectionMode)
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        sliver: SliverToBoxAdapter(
+                          child: const TitleWidget('Total'),
+                        ),
+                      ),
+                    if (!_isSelectionMode)
+                      SliverToBoxAdapter(child: const SizedBox(height: 16)),
+                    if (!_isSelectionMode)
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        sliver: SliverToBoxAdapter(
+                          child:
+                              BlocSelector<
+                                ReporteBloc,
+                                ReporteState,
+                                ResumeData
+                              >(
+                                selector: (state) => state.resumen,
+                                builder: (context, resumen) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Flexible(
+                                        child: Row(
+                                          children: [
+                                            Flexible(
+                                              child: CardResumenWidget(
+                                                title: 'Fuerza efectiva (FE)',
+                                                details: resumen.fe,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Flexible(
+                                              child: CardResumenWidget(
+                                                title: 'Fuerza disponible (FD)',
+                                                details: resumen.fd,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      CardResumenWidget(
+                                        title: 'Novedades (NV)',
+                                        details: resumen.nv,
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                        ),
+                      ),
+                    // SliverToBoxAdapter(child: const SizedBox(height: 16)),
+                    SliverAppBar(
+                      title: const TitleWidget('Secciones'),
+                      pinned: true,
+                      backgroundColor: Colors.white,
+                      surfaceTintColor: Colors.transparent,
+                      automaticallyImplyLeading: false,
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      sliver: SliverToBoxAdapter(
+                        child:
+                            BlocSelector<
+                              ReporteBloc,
+                              ReporteState,
+                              List<SeccionData>
+                            >(
+                              selector: (state) => state.secciones,
+                              builder: (context, secciones) {
+                                if (secciones.isEmpty) {
+                                  return SizedBox(
+                                    height: 200,
+                                    child: const Center(
+                                      child: Text(
+                                        'No hay secciones agregadas',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return ListView.separated(
+                                  key: const Key('listViewSecciones'),
+                                  cacheExtent: 80,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: secciones.length,
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(height: 16),
+                                  itemBuilder: (context, index) =>
+                                      _buildSeccionItemWidget(context, index),
+                                );
+                              },
+                            ),
                       ),
                     ),
+                    SliverToBoxAdapter(child: const SizedBox(height: 100)),
                   ],
                 ),
               ),
-
-              Positioned.fill(
-                child: Visibility(
-                  visible: !isKeyboardVisible,
-                  maintainState: true,
-                  maintainSize: true,
-                  maintainAnimation: true,
-                  maintainInteractivity: true,
-                  child: DraggableScrollableSheet(
-                    initialChildSize: _minBottomSheetSize,
-                    minChildSize: _minBottomSheetSize,
-                    builder: (context, scrollController) {
-                      return Material(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: Colors.grey[200],
-                        child: BlocSelector<ReporteBloc, ReporteState, ResumeData>(
-                          selector: (state) => state.resumen,
-                          builder: (context, resumen) {
-                            final secciones = context
+            ),
+            if (!isKeyboardVisible && !_isSelectionMode)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 75,
+                child: Material(
+                  color: Colors.white,
+                  elevation: 12,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            final resumen = context
                                 .read<ReporteBloc>()
-                                .state
-                                .secciones;
-                            return CustomScrollView(
-                              controller: scrollController,
-                              slivers: [
-                                SliverToBoxAdapter(
-                                  child: Center(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).hintColor,
-                                        borderRadius:
-                                            const BorderRadius.all(
-                                              Radius.circular(10),
-                                            ),
-                                      ),
-                                      height: 4,
-                                      width: 40,
-                                      margin: const EdgeInsets.symmetric(
-                                        vertical: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SliverAppBar(
-                                  title: const Text(
-                                    '📝 Resumen del Reporte',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  backgroundColor: Colors.transparent,
-                                  pinned: true,
-                                ),
-                                SliverToBoxAdapter(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16,),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          resumen.getCopyText(),
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 24),
-                                        ...secciones.map(
-                                          (seccion) => Text(
-                                            seccion.getCopyText(
-                                              secciones.indexOf(seccion),
-                                            ),
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                .getResumenText();
+                            SharePlus.instance.share(
+                              ShareParams(
+                                title: 'Reporte de Parte Carabineros',
+                                subject: 'Reporte de Parte',
+                                text: resumen,
+                              ),
                             );
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          child: Center(child: Icon(Icons.share)),
                         ),
-                      );
-                    },
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () =>
+                                context.read<ReporteBloc>().add(AddSeccion()),
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Agregar Sección',
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.white,
+                                    ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          );
-        },
-      ),
-      bottomNavigationBar: Visibility(
-        visible: !isKeyboardVisible,
-        maintainState: true,
-        maintainSize: true,
-        maintainAnimation: true,
-        maintainInteractivity: true,
-        child: BottomAppBar(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios),
-                  onPressed: () {
-                    if (_pageController.hasClients) {
-                      _pageController.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    }
-                  },
-                ),
-                BlocBuilder<ReporteBloc, ReporteState>(
-                  builder: (context, state) {
-                    return Text(
-                      'Seccion ${_pageController.hasClients ? (_pageController.page?.round() ?? 0) +1 : 1} de ${context.read<ReporteBloc>().state.secciones.length}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    );
-                  }
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios),
-                  onPressed: () {
-                    if (_pageController.hasClients) {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionWidget(
-    BuildContext context,
-    int index,
-    List<SeccionData> secciones,
-  ) {
-    final onDelete = secciones.length > 1
-        ? () => _showDeleteConfirmation(index)
-        : null;
-    return SeccionWidget(
-      key: Key('section_$index'),
-      index: index,
-      data: secciones[index],
-      onDelete: onDelete,
+  SliverAppBar _buildAppBar(int totalItems) {
+    if (_isSelectionMode) {
+      return SliverAppBar(
+        title: Text('${_selectedSections.length} seleccionada(s)'),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            setState(() {
+              _isSelectionMode = false;
+              _selectedSections.clear();
+            });
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _selectedSections.length == totalItems
+                  ? Icons.deselect
+                  : Icons.select_all,
+            ),
+            onPressed: () {
+              setState(() {
+                if (_selectedSections.length == totalItems) {
+                  _selectedSections.clear();
+                } else {
+                  _selectedSections.addAll(List.generate(totalItems, (i) => i));
+                }
+              });
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: _selectedSections.isEmpty
+                ? null
+                : _showDeleteConfirmation,
+          ),
+        ],
+        pinned: true,
+        backgroundColor: Colors.grey.shade300,
+        surfaceTintColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+      );
+    }
+    return SliverAppBar(
+      title: Column(
+        children: [
+          const Text('Calcular Parte'),
+          Text(
+            'Escuela de Carabineros Alejandro Gutiérrez',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w400,
+              color: AppColors.grey500,
+            ),
+          ),
+        ],
+      ),
+      titleTextStyle: Theme.of(
+        context,
+      ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.normal),
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      pinned: true,
+      automaticallyImplyLeading: false,
+      centerTitle: true,
+    );
+  }
+
+  Widget _buildSeccionItemWidget(BuildContext context, int index) {
+    final seccionData = context.read<ReporteBloc>().state.secciones[index];
+    final isSelected = _selectedSections.contains(index);
+
+    return Hero(
+      tag: 'seccion_item_$index',
+      child: SeccionItemWidget(
+        key: Key('seccion_item_$index'),
+        index: index,
+        seccionData: seccionData,
+        isSelected: isSelected,
+        onTap: (index) {
+          if (_isSelectionMode) {
+            setState(() {
+              if (_selectedSections.contains(index)) {
+                _selectedSections.remove(index);
+              } else {
+                _selectedSections.add(index);
+              }
+            });
+          } else {
+            _openSectionPage(context, index);
+          }
+        },
+        onLongPress: (index) {
+          if (!_isSelectionMode) {
+            setState(() {
+              _isSelectionMode = true;
+              _selectedSections.add(index);
+            });
+          }
+        },
+      ),
+    );
+  }
+
+  void _openSectionPage(BuildContext context, int index) {
+    final reporteBloc = context.read<ReporteBloc>();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: RouteSettings(name: 'ReportDetailPage', arguments: index),
+        builder: (context) => BlocProvider.value(
+          value: reporteBloc,
+          child: ReportDetailPage(index: index),
+        ),
+      ),
     );
   }
 }

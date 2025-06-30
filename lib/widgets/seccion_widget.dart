@@ -1,11 +1,10 @@
-import 'package:carabineros/widgets/seccion_text_field_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:carabineros/bloc/reporte_bloc.dart';
 import 'package:carabineros/bloc/reporte_event.dart';
 import 'package:carabineros/models/seccion_data.dart';
+import 'package:carabineros/widgets/seccion_text_field_widget.dart';
 
 class SeccionWidget extends StatefulWidget {
   final int index;
@@ -28,7 +27,6 @@ class _SeccionWidgetState extends State<SeccionWidget> {
   late final TextEditingController _fdController;
   late final TextEditingController _nvController;
   late final TextEditingController _detController;
-  final _scrollController = ScrollController();
 
   final _feFocusNode = FocusNode();
   final _fdFocusNode = FocusNode();
@@ -72,7 +70,6 @@ class _SeccionWidgetState extends State<SeccionWidget> {
     _fdController.dispose();
     _nvController.dispose();
     _detController.dispose();
-    _scrollController.dispose();
     _feFocusNode.removeListener(_ensureVisible);
     _fdFocusNode.removeListener(_ensureVisible);
     _detFocusNode.removeListener(_ensureVisible);
@@ -111,99 +108,75 @@ class _SeccionWidgetState extends State<SeccionWidget> {
         ? Colors.red.shade200
         : Colors.white;
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final spacing = 8.0;
+            final isSmallScreen = constraints.maxWidth < 600;
+            final width = isSmallScreen
+                ? constraints.maxWidth
+                : (constraints.maxWidth / 3) - spacing;
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
               children: [
-                Text(
-                  'Sección ${widget.index + 1}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                SizedBox(
+                  width: width,
+                  child: SeccionTextFieldWidget(
+                    label: "FE:",
+                    controller: _feController,
+                    isSmallScreen: isSmallScreen,
+                    focusNode: _feFocusNode,
+                    onChanged: (value) => context.read<ReporteBloc>().add(
+                      UpdateSeccion(widget.index, fe: value),
+                    ),
                   ),
                 ),
-                if (widget.onDelete != null)
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: widget.onDelete,
+                SizedBox(
+                  width: width,
+                  child: SeccionTextFieldWidget(
+                    label: "FD:",
+                    controller: _fdController,
+                    isSmallScreen: isSmallScreen,
+                    focusNode: _fdFocusNode,
+                    onChanged: (value) => context.read<ReporteBloc>().add(
+                      UpdateSeccion(widget.index, fd: value),
+                    ),
                   ),
+                ),
+                SizedBox(
+                  width: width,
+                  child: SeccionTextFieldWidget(
+                    label: "NV:",
+                    controller: _nvController,
+                    isSmallScreen: isSmallScreen,
+                    focusNode: _nvFocusNode,
+                    readOnly: true,
+                    backgroundColor: nvBackgroundColor,
+                  ),
+                ),
               ],
-            ),
-            const SizedBox(height: 10),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final spacing = 8.0;
-                final isSmallScreen = constraints.maxWidth < 600;
-                final width = isSmallScreen
-                    ? constraints.maxWidth
-                    : (constraints.maxWidth / 3) - spacing;
-                return Wrap(
-                  spacing: spacing,
-                  runSpacing: spacing,
-                  children: [
-                    SizedBox(
-                      width: width,
-                      child: SeccionTextFieldWidget(
-                        label: "FE:",
-                        controller: _feController,
-                        isSmallScreen: isSmallScreen,
-                        focusNode: _feFocusNode,
-                        onChanged: (value) => context.read<ReporteBloc>().add(
-                          UpdateSeccion(widget.index, fe: value),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: width,
-                      child: SeccionTextFieldWidget(
-                        label: "FD:",
-                        controller: _fdController,
-                        isSmallScreen: isSmallScreen,
-                        focusNode: _fdFocusNode,
-                        onChanged: (value) => context.read<ReporteBloc>().add(
-                          UpdateSeccion(widget.index, fd: value),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: width,
-                      child: SeccionTextFieldWidget(
-                        label: "NV:",
-                        controller: _nvController,
-                        isSmallScreen: isSmallScreen,
-                        focusNode: _nvFocusNode,
-                        readOnly: true,
-                        backgroundColor: nvBackgroundColor,
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            const Text('Detalles de novedades:'),
-            TextField(
-              controller: _detController,
-              maxLines: 3,
-              focusNode: _detFocusNode,
-              onChanged: (value) => context.read<ReporteBloc>().add(
-                UpdateSeccion(widget.index, det: value),
-              ),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-          ],
+            );
+          },
         ),
-      ),
+        const SizedBox(height: 10),
+        const Text('Detalles de novedades:'),
+        TextField(
+          controller: _detController,
+          maxLines: 5,
+          focusNode: _detFocusNode,
+          onChanged: (value) => context.read<ReporteBloc>().add(
+            UpdateSeccion(widget.index, det: value),
+          ),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }

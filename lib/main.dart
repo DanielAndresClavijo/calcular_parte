@@ -1,3 +1,4 @@
+import 'package:carabineros/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'screens/report_home_page.dart';
 
@@ -12,16 +13,7 @@ class ReportApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Escuela de carabineros Alejandro Gutiérrez',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.grey[200],
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: AppTheme.theme,
       home: const ReportHomePage(),
     );
   }

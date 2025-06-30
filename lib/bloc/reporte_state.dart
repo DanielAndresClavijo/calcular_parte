@@ -13,7 +13,7 @@ abstract class ReporteState extends Equatable {
 }
 
 class ReporteInitial extends ReporteState {
-  ReporteInitial() : super([SeccionData()], ResumeData());
+  ReporteInitial() : super([], ResumeData());
 }
 
 class ReporteUpdated extends ReporteState {

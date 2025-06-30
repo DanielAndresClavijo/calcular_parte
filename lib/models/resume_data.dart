@@ -3,7 +3,7 @@ class ResumeData {
   final String fd;
   final String nv;
 
-  const ResumeData({this.fe = '', this.fd = '', this.nv = ''});
+  const ResumeData({this.fe = '0', this.fd = '0', this.nv = '0'});
 
   @override
   String toString() {

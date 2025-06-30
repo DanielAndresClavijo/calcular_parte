@@ -9,13 +9,14 @@ abstract class ReporteEvent extends Equatable {
 
 class AddSeccion extends ReporteEvent {}
 
-class RemoveSeccion extends ReporteEvent {
-  final int index;
 
-  const RemoveSeccion(this.index);
+class RemoveMultipleSecciones extends ReporteEvent {
+  final List<int> indices;
+
+  const RemoveMultipleSecciones(this.indices);
 
   @override
-  List<Object> get props => [index];
+  List<Object> get props => [indices];
 }
 
 class UpdateSeccion extends ReporteEvent {
@@ -29,8 +30,6 @@ class UpdateSeccion extends ReporteEvent {
   @override
   List<Object?> get props => [index, fe, fd, det];
 }
-
-class ClearAll extends ReporteEvent {}
 
 class ChangeSeccion extends ReporteEvent {
   final int index;
