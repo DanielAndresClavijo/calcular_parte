@@ -1,28 +1,29 @@
 name: Deploy Flutter Web to GitHub Pages
 
 on:
+  # Se ejecuta en los pushes a la rama principal
   push:
     branches: ["main"]
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+
+  # Permite ejecutar este workflow manualmente desde la pestaña Actions
+  workflow_dispatch:
+
+# Establece los permisos del GITHUB_TOKEN para permitir el despliegue en GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Permite solo un despliegue concurrente, omitiendo las ejecuciones en cola entre la que está en progreso y la última en cola.
+# Sin embargo, NO cancela las ejecuciones en progreso, ya que queremos permitir que estos despliegues de producción se completen.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+  # Tarea de construcción
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,29 +31,14 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: "stable"
           flutter-version: 3.32.5
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Flutter Web
+      - name: Build web
         run: flutter build web --release --base-href /calcular_parte/
-
-      - name: Update base href and script src in index.html
-        run: |
-          REPO_NAME=${{ github.repository }}
-          sed -i 's|href="|href="/calcular_parte/|g' build/web/index.html
-          sed -i 's|src="|src="/calcular_parte/|g' build/web/index.html
-
-      - name: Echo and Remove symlinks
-        run: |
-          echo "The following symlinks will be removed:"
-          find build/web -type l -exec echo {} +
-          find build/web -type l -exec rm -f {} +
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -60,8 +46,16 @@ jobs:
           name: "web-artifact"
           path: "build/web"
 
+  # Tarea de despliegue
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
         with:
           artifact_name: "web-artifact"
