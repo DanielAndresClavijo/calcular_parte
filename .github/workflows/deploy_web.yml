@@ -40,9 +40,10 @@ jobs:
       - name: Build web app with Peanut
         run: |
           echo "Ejecutando peanut para generar un build limpio sin symlinks..."
-          # Usamos --dry-run para que peanut ejecute 'flutter build' pero NO los comandos de git.
-          # Esto nos deja con un directorio 'build/web' limpio y listo para ser desplegado.
-          flutter pub global run peanut --extra-args "--base-href=/calcular_parte/" --directory build/web --dry-run
+          # No se especifica --directories, ya que el valor por defecto ('web') es correcto.
+          # Peanut ejecutará 'flutter build web', que genera la salida en 'build/web'.
+          # Usamos --dry-run para que peanut ejecute el build pero NO los comandos de git.
+          flutter pub global run peanut --extra-args "--base-href=/calcular_parte/" --dry-run
 
       - name: Verify build output
         run: |
