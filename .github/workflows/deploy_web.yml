@@ -29,13 +29,14 @@ jobs:
         run: flutter build web --release --base-href /calcular_parte/
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
           path: build/web
 
+      - name: List files
+        run: ls -la # or use tree . for a tree like structure
+
   deploy:
-    needs: build
     permissions:
       pages: write
       id-token: write
@@ -43,6 +44,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
