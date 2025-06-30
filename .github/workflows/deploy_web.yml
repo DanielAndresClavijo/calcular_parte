@@ -1,4 +1,4 @@
-name: Deploy Flutter Web to GitHub Pages
+name: Deploy Flutter Web to GitHub Pages with Peanut
 
 on:
   # Se ejecuta en los pushes a la rama principal
@@ -9,24 +9,26 @@ on:
   workflow_dispatch:
 
 # Establece los permisos del GITHUB_TOKEN para permitir el despliegue en GitHub Pages
+# Nota: contents:write es necesario para que peanut pueda hacer push a gh-pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
-# Permite solo un despliegue concurrente, omitiendo las ejecuciones en cola entre la que está en progreso y la última en cola.
-# Sin embargo, NO cancela las ejecuciones en progreso, ya que queremos permitir que estos despliegues de producción se completen.
+# Permite solo un despliegue concurrente
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Tarea de construcción
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Peanut necesita el historial completo para poder crear/actualizar la rama gh-pages
+          fetch-depth: 0
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -37,56 +39,21 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build web
-        run: flutter build web --release --base-href /calcular_parte/
+      - name: Install peanut
+        run: flutter pub global activate peanut
 
-      - name: Remove symlinks and hard links
+      - name: Configure Git
         run: |
-          echo "Checking for symlinks and hard links in build/web..."
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
 
-          # Encontrar y eliminar symlinks
-          SYMLINKS=$(find build/web -type l)
-          if [ -n "$SYMLINKS" ]; then
-            echo "Found symlinks. Removing them:"
-            echo "$SYMLINKS"
-            find build/web -type l -delete
-          else
-            echo "No symlinks found."
-          fi
+      - name: Build and deploy with peanut
+        run: |
+          echo "Construyendo con peanut - este método evita symlinks automáticamente"
+          flutter pub global run peanut --web-renderer canvaskit --base-href /calcular_parte/ --message "Deploy Flutter web app to GitHub Pages"
 
-          # Comprobación adicional para asegurar que no quedan enlaces
-          if [ -n "$(find build/web -type l)" ]; then
-            echo "Warning: Some symlinks could not be removed!"
-          else
-            echo "All symlinks successfully removed."
-          fi
+          echo "Verificando contenido generado por peanut"
+          ls -la
 
-          # Formato alternativo - Crear un archivo tar y extraerlo para eliminar enlaces
-          echo "Creating a clean copy without links..."
-          mkdir -p clean_build
-          tar -cf - -C build/web . | tar -xf - -C clean_build
-          rm -rf build/web
-          mv clean_build build/web
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-artifact
-          path: build/web
-
-  # Tarea de despliegue
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        with:
-          artifact_name: web-artifact
+          echo "Publicando a gh-pages"
+          git push origin gh-pages
