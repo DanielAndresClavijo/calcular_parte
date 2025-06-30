@@ -8,12 +8,10 @@ on:
   # Permite ejecutar este workflow manualmente desde la pestaña Actions
   workflow_dispatch:
 
-# Establece los permisos del GITHUB_TOKEN para permitir el despliegue en GitHub Pages
-# Nota: contents:write es necesario para que peanut pueda hacer push a gh-pages
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read # Solo necesita leer el repo, no escribirlo
+  pages: write # Necesita permisos para escribir en GitHub Pages
+  id-token: write # Necesario para la autenticación con GitHub Pages
 
 # Permite solo un despliegue concurrente
 concurrency:
@@ -21,14 +19,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          # Peanut necesita el historial completo para poder crear/actualizar la rama gh-pages
-          fetch-depth: 0
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -42,18 +37,41 @@ jobs:
       - name: Install peanut
         run: flutter pub global activate peanut
 
-      - name: Configure Git
+      - name: Build web app with Peanut
         run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
+          echo "Ejecutando peanut para generar un build limpio sin symlinks..."
+          # Usamos --dry-run para que peanut ejecute 'flutter build' pero NO los comandos de git.
+          # Esto nos deja con un directorio 'build/web' limpio y listo para ser desplegado.
+          flutter pub global run peanut --extra-args "--base-href=/calcular_parte/" --directory build/web --dry-run
 
-      - name: Build and deploy with peanut
+      - name: Verify build output
         run: |
-          echo "Construyendo con peanut - este método evita symlinks automáticamente"
-          flutter pub global run peanut --extra-args "--base-href=/calcular_parte/" --message "Deploy Flutter web app to GitHub Pages"
+          echo "Contenido del directorio de build:"
+          ls -la build/web
+          echo "Verificando que no queden symlinks..."
+          if [ -n "$(find build/web -type l)" ]; then
+            echo "Error: Se encontraron symlinks inesperadamente después del build con peanut."
+            exit 1
+          else
+            echo "Éxito: El build de peanut no contiene symlinks."
+          fi
 
-          echo "Verificando contenido generado por peanut"
-          ls -la
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: ./build/web
 
-          echo "Publicando a gh-pages"
-          git push origin gh-pages
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
