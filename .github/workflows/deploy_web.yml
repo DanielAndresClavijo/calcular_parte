@@ -8,71 +8,40 @@ on:
   # Permite ejecutar este workflow manualmente desde la pestaña Actions
   workflow_dispatch:
 
-permissions:
-  contents: read # Solo necesita leer el repo, no escribirlo
-  pages: write # Necesita permisos para escribir en GitHub Pages
-  id-token: write # Necesario para la autenticación con GitHub Pages
-
-# Permite solo un despliegue concurrente
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
           flutter-version: 3.32.5
+          channel: "stable"
+          cache: true
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Install peanut
-        run: flutter pub global activate peanut
-
-      - name: Build web app with Peanut
-        run: |
-          echo "Ejecutando peanut para generar un build limpio sin symlinks..."
-          # No se especifica --directories, ya que el valor por defecto ('web') es correcto.
-          # Peanut ejecutará 'flutter build web', que genera la salida en 'build/web'.
-          # Usamos --dry-run para que peanut ejecute el build pero NO los comandos de git.
-          flutter pub global run peanut --extra-args "--base-href=/calcular_parte/" --dry-run
-
-      - name: Verify build output
-        run: |
-          echo "Contenido del directorio de build:"
-          ls -la build/web
-          echo "Verificando que no queden symlinks..."
-          if [ -n "$(find build/web -type l)" ]; then
-            echo "Error: Se encontraron symlinks inesperadamente después del build con peanut."
-            exit 1
-          else
-            echo "Éxito: El build de peanut no contiene symlinks."
-          fi
+      - name: Build Flutter web app
+        run: flutter build web --release --base-href /calcular_parte/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages
-          path: ./build/web
+          name: web-release
+          path: build/web
 
   deploy:
     needs: build
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/download-artifact@v2
+        with:
+          name: web-release
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
