@@ -1,12 +1,12 @@
-import 'package:carabineros/widgets/seccion_widget.dart';
-import 'package:carabineros/widgets/title_widget.dart';
+import 'package:calcular_parte/widgets/seccion_widget.dart';
+import 'package:calcular_parte/widgets/title_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:carabineros/bloc/reporte_bloc.dart';
-import 'package:carabineros/bloc/reporte_state.dart';
-import 'package:carabineros/theme/app_colors.dart';
-import 'package:carabineros/widgets/seccion_item_widget.dart';
+import 'package:calcular_parte/bloc/reporte_bloc.dart';
+import 'package:calcular_parte/bloc/reporte_state.dart';
+import 'package:calcular_parte/theme/app_colors.dart';
+import 'package:calcular_parte/widgets/seccion_item_widget.dart';
 
 class ReportDetailPage extends StatefulWidget {
   final int index;

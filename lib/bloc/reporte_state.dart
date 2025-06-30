@@ -1,5 +1,5 @@
-import 'package:carabineros/models/resume_data.dart';
-import 'package:carabineros/models/seccion_data.dart';
+import 'package:calcular_parte/models/resume_data.dart';
+import 'package:calcular_parte/models/seccion_data.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class ReporteState extends Equatable {

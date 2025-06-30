@@ -1,5 +1,5 @@
-import 'package:carabineros/models/seccion_data.dart';
-import 'package:carabineros/theme/app_colors.dart';
+import 'package:calcular_parte/models/seccion_data.dart';
+import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SeccionItemWidget extends StatelessWidget {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:carabineros/bloc/reporte_bloc.dart';
-import 'package:carabineros/bloc/reporte_event.dart';
-import 'package:carabineros/models/seccion_data.dart';
-import 'package:carabineros/widgets/seccion_text_field_widget.dart';
+import 'package:calcular_parte/bloc/reporte_bloc.dart';
+import 'package:calcular_parte/bloc/reporte_event.dart';
+import 'package:calcular_parte/models/seccion_data.dart';
+import 'package:calcular_parte/widgets/seccion_text_field_widget.dart';
 
 class SeccionWidget extends StatefulWidget {
   final int index;

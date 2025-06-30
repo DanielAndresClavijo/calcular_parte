@@ -4,16 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:share_plus/share_plus.dart';
 
-import 'package:carabineros/bloc/reporte_bloc.dart';
-import 'package:carabineros/bloc/reporte_event.dart';
-import 'package:carabineros/bloc/reporte_state.dart';
-import 'package:carabineros/models/resume_data.dart';
-import 'package:carabineros/models/seccion_data.dart';
-import 'package:carabineros/screens/report_detail_page.dart';
-import 'package:carabineros/theme/app_colors.dart';
-import 'package:carabineros/widgets/card_resumen_widget.dart';
-import 'package:carabineros/widgets/seccion_item_widget.dart';
-import 'package:carabineros/widgets/title_widget.dart';
+import 'package:calcular_parte/bloc/reporte_bloc.dart';
+import 'package:calcular_parte/bloc/reporte_event.dart';
+import 'package:calcular_parte/bloc/reporte_state.dart';
+import 'package:calcular_parte/models/resume_data.dart';
+import 'package:calcular_parte/models/seccion_data.dart';
+import 'package:calcular_parte/screens/report_detail_page.dart';
+import 'package:calcular_parte/theme/app_colors.dart';
+import 'package:calcular_parte/widgets/card_resumen_widget.dart';
+import 'package:calcular_parte/widgets/seccion_item_widget.dart';
+import 'package:calcular_parte/widgets/title_widget.dart';
 
 class ReportHomePage extends StatelessWidget {
   const ReportHomePage({super.key});

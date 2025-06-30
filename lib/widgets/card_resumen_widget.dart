@@ -1,4 +1,4 @@
-import 'package:carabineros/theme/app_colors.dart';
+import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CardResumenWidget extends StatelessWidget {

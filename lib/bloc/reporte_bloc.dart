@@ -1,9 +1,9 @@
-import 'package:carabineros/models/resume_data.dart';
+import 'package:calcular_parte/models/resume_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:carabineros/bloc/reporte_event.dart';
-import 'package:carabineros/bloc/reporte_state.dart';
-import 'package:carabineros/models/seccion_data.dart';
+import 'package:calcular_parte/bloc/reporte_event.dart';
+import 'package:calcular_parte/bloc/reporte_state.dart';
+import 'package:calcular_parte/models/seccion_data.dart';
 
 class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
   ReporteBloc() : super(ReporteInitial()) {

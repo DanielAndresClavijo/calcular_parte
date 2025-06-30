@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carabineros/theme/app_colors.dart';
+import 'package:calcular_parte/theme/app_colors.dart';
 
 class AppTypography {
   static const TextStyle headline1 = TextStyle(
@@ -18,5 +18,5 @@ class AppTypography {
     fontWeight: FontWeight.bold,
     color: AppColors.white,
   );
-  
+
 }

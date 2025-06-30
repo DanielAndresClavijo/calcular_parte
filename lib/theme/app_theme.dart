@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carabineros/theme/app_colors.dart';
+import 'package:calcular_parte/theme/app_colors.dart';
 
 class AppTheme {
   static final MaterialColor _primarySwatch = MaterialColor(AppColors.primary.value, {

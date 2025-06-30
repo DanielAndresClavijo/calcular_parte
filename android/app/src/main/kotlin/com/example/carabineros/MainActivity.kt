@@ -1,4 +1,4 @@
-package com.example.carabineros
+package com.parte.calcular
 
 import io.flutter.embedding.android.FlutterActivity
 
