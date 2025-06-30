@@ -31,7 +31,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: web-release
+          name: github-pages
           path: build/web
 
   deploy:
@@ -40,7 +40,7 @@ jobs:
       pages: write
       id-token: write
     environment:
-      name: web-release
+      name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
