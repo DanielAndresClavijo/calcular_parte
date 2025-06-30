@@ -347,7 +347,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
         children: [
           const Text('Calcular Parte'),
           Text(
-            'Escuela de Carabineros Alejandro Gutiérrez',
+            '',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w400,
               color: AppColors.grey500,

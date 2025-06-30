@@ -12,7 +12,7 @@ class ReportApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Escuela de carabineros Alejandro Gutiérrez',
+      title: 'Calcular Parte',
       theme: AppTheme.theme,
       home: const ReportHomePage(),
     );
