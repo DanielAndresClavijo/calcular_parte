@@ -277,7 +277,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                             ),
                             child: Center(
                               child: Text(
-                                'Agregar Sección',
+                                'Agregar Campo',
                                 style: Theme.of(context).textTheme.bodyLarge
                                     ?.copyWith(
                                       fontWeight: FontWeight.bold,
