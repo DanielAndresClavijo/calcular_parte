@@ -70,7 +70,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.error,
+                foregroundColor: AppColors.secondary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -349,7 +349,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
           Text(
             '',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.normal,
               color: AppColors.grey500,
             ),
           ),

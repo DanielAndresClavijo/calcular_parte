@@ -125,7 +125,7 @@ class _SeccionWidgetState extends State<SeccionWidget> {
                 SizedBox(
                   width: width,
                   child: SeccionTextFieldWidget(
-                    label: "FE:",
+                    label: "Fuerza efectiva (FE):",
                     controller: _feController,
                     isSmallScreen: isSmallScreen,
                     focusNode: _feFocusNode,
@@ -137,7 +137,7 @@ class _SeccionWidgetState extends State<SeccionWidget> {
                 SizedBox(
                   width: width,
                   child: SeccionTextFieldWidget(
-                    label: "FD:",
+                    label: "Fuerza Disponible (FD):",
                     controller: _fdController,
                     isSmallScreen: isSmallScreen,
                     focusNode: _fdFocusNode,
@@ -149,7 +149,7 @@ class _SeccionWidgetState extends State<SeccionWidget> {
                 SizedBox(
                   width: width,
                   child: SeccionTextFieldWidget(
-                    label: "NV:",
+                    label: "Novedad (NV):",
                     controller: _nvController,
                     isSmallScreen: isSmallScreen,
                     focusNode: _nvFocusNode,

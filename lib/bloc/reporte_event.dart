@@ -31,11 +31,12 @@ class UpdateSeccion extends ReporteEvent {
   List<Object?> get props => [index, fe, fd, det];
 }
 
-class ChangeSeccion extends ReporteEvent {
+class UpdateSeccionName extends ReporteEvent {
   final int index;
+  final String newName;
 
-  const ChangeSeccion(this.index);
+  const UpdateSeccionName(this.index, this.newName);
 
   @override
-  List<Object?> get props => [index];
+  List<Object> get props => [index, newName];
 }

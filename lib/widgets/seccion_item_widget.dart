@@ -34,12 +34,19 @@ class SeccionItemWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
+              Text(
+                seccionData.name.isNotEmpty ? seccionData.name : 'Sección ${index + 1}',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.normal,
+                  color: colorText,
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   RichText(
                     text: TextSpan(
-                      text: 'FE\n',
+                      text: 'FE: ',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w400,
                         color: colorText,
@@ -58,7 +65,7 @@ class SeccionItemWidget extends StatelessWidget {
                   const SizedBox(width: 8.0),
                   RichText(
                     text: TextSpan(
-                      text: 'FD\n',
+                      text: 'FD: ',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w400,
                         color: colorText,
@@ -77,9 +84,9 @@ class SeccionItemWidget extends StatelessWidget {
                   const SizedBox(width: 8.0),
                   RichText(
                     text: TextSpan(
-                      text: 'NV\n',
+                      text: 'NV: ',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.normal,
                         color: colorText,
                       ),
                       children: [

@@ -26,7 +26,7 @@ class CardResumenWidget extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.normal,
                 color: AppColors.grey700,
               ),
             ),

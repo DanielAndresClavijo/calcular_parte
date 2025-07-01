@@ -10,11 +10,15 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     on<AddSeccion>(_onAddSeccion);
     on<RemoveMultipleSecciones>(_onRemoveMultipleSecciones);
     on<UpdateSeccion>(_onUpdateSeccion);
+    on<UpdateSeccionName>(_onUpdateSeccionName);
   }
 
   void _onAddSeccion(AddSeccion event, Emitter<ReporteState> emit) {
+    final newSeccion = SeccionData(
+      name: 'Sección ${state.secciones.length + 1}',
+    );
     final newSecciones = List<SeccionData>.from(state.secciones)
-      ..add(const SeccionData());
+      ..add(newSeccion);
 
     final resumen = _calculateResumen(newSecciones);
     emit(ReporteUpdated(newSecciones, resumen));
@@ -56,6 +60,18 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     }
 
     newSecciones[event.index] = updatedSeccion.copyWith(nv: nv);
+
+    final resumen = _calculateResumen(newSecciones);
+    emit(ReporteUpdated(newSecciones, resumen));
+  }
+
+  void _onUpdateSeccionName(UpdateSeccionName event, Emitter<ReporteState> emit) {
+    final newSecciones = List<SeccionData>.from(state.secciones);
+    final seccionToUpdate = newSecciones[event.index];
+
+    final updatedSeccion = seccionToUpdate.copyWith(name: event.newName);
+
+    newSecciones[event.index] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
     emit(ReporteUpdated(newSecciones, resumen));
