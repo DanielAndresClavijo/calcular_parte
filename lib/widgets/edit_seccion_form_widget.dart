@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
 
 import 'package:calcular_parte/bloc/reporte_bloc.dart';
 import 'package:calcular_parte/bloc/reporte_event.dart';
@@ -35,6 +36,7 @@ class _EditSeccionFormWidgetState extends State<EditSeccionFormWidget> {
   final _nvFocusNode = FocusNode();
 
   final detalleDefault = const NovedadDetalleDefault();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -81,7 +83,22 @@ class _EditSeccionFormWidgetState extends State<EditSeccionFormWidget> {
     _feFocusNode.dispose();
     _fdFocusNode.dispose();
     _nvFocusNode.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
+  }
+
+  void _onNombreChanged(String value) {
+    // Cancelar el timer anterior si existe
+    _debounceTimer?.cancel();
+    
+    // Crear un nuevo timer que se ejecutará después de 500ms
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        context.read<ReporteBloc>().add(
+          UpdateSeccionName(widget.index, value),
+        );
+      }
+    });
   }
 
   Future<void> _ensureVisible() async {
@@ -130,9 +147,7 @@ class _EditSeccionFormWidgetState extends State<EditSeccionFormWidget> {
                   controller: _nombreSeccionController,
                   isSmallScreen: isSmallScreen,
                   focusNode: _nombreSeccionFocusNode,
-                  onChanged: (value) => context.read<ReporteBloc>().add(
-                    UpdateSeccionName(widget.index, value),
-                  ),
+                  onChanged: _onNombreChanged,
                 ),
               ),
               SizedBox(
