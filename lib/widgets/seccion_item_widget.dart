@@ -112,8 +112,10 @@ class SeccionItemWidget extends StatelessWidget {
                   ),
                   children: [
                     TextSpan(
-                      text: seccionData.det,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      text: seccionData.det.isEmpty
+                          ? 'No hay detalles'
+                          : seccionData.det.map((d) => '  - ${d.emoji ?? ''} ${d.tipo}: ${d.cantidad}').join('\n'),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.normal,
                         color: colorText,
                       ),

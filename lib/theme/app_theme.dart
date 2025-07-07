@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:calcular_parte/theme/app_colors.dart';
 
 class AppTheme {
-  static final MaterialColor _primarySwatch = MaterialColor(AppColors.primary.value, {
+  static final MaterialColor _primarySwatch = MaterialColor(AppColors.primary.toARGB32(), {
     50: AppColors.primary.withValues(alpha: 0.1),
     100: AppColors.primary.withValues(alpha: 0.2),
     200: AppColors.primary.withValues(alpha: 0.3),

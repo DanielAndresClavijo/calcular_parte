@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "Calcular Parte" "\0"
+            VALUE "CompanyName", "com.parte" "\0"
+            VALUE "FileDescription", "calcular_parte" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "Calcular Parte" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "calcularparte.exe" "\0"
-            VALUE "ProductName", "Calcular Parte" "\0"
+            VALUE "InternalName", "calcular_parte" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.parte. All rights reserved." "\0"
+            VALUE "OriginalFilename", "calcular_parte.exe" "\0"
+            VALUE "ProductName", "calcular_parte" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

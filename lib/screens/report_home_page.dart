@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:share_plus/share_plus.dart';
@@ -14,6 +13,7 @@ import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:calcular_parte/widgets/card_resumen_widget.dart';
 import 'package:calcular_parte/widgets/seccion_item_widget.dart';
 import 'package:calcular_parte/widgets/title_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReportHomePage extends StatelessWidget {
   const ReportHomePage({super.key});
@@ -409,10 +409,29 @@ class _ReportHomeViewState extends State<ReportHomeView> {
       context,
       MaterialPageRoute(
         settings: RouteSettings(name: 'ReportDetailPage', arguments: index),
-        builder: (context) => BlocProvider.value(
-          value: reporteBloc,
-          child: ReportDetailPage(index: index),
-        ),
+        builder: (context) {
+          final prefs = SharedPreferences.getInstance();
+          return FutureBuilder(
+            future: prefs,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                final tiposSugeridos =
+                  snapshot.data?.getStringList('novedad_tipos') ?? [];
+                return BlocProvider.value(
+                  value: reporteBloc,
+                  child: ReportDetailPage(
+                    index: index,
+                    tiposSugeridos: tiposSugeridos,
+                  ),
+                );
+              }
+              return Scaffold(
+                backgroundColor: AppColors.white,
+                body: const Center(child: CircularProgressIndicator()),
+              );
+            },
+          );
+        },
       ),
     );
   }
