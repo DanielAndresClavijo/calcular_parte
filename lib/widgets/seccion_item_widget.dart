@@ -22,7 +22,9 @@ class SeccionItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorText = isSelected ? AppColors.white : AppColors.black;
     return Card(
+      color: isSelected ? AppColors.primary : null,
       margin: const EdgeInsets.all(0),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap != null ? () => onTap!(index) : null,
         onLongPress: onLongPress != null ? () => onLongPress!(index) : null,

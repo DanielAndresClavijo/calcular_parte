@@ -154,7 +154,6 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                               ),
                         ),
                       ),
-                    // SliverToBoxAdapter(child: const SizedBox(height: 16)),
                     SliverAppBar(
                       title: const TitleWidget('Secciones'),
                       pinned: true,
@@ -213,89 +212,89 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                 child: Material(
                   color: Colors.white,
                   elevation: 12,
-                                      child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          // Botón de compartir
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                final resumen = context
-                                    .read<ReporteBloc>()
-                                    .getResumenText();
-                                SharePlus.instance.share(
-                                  ShareParams(
-                                    title: 'Reporte de Parte Carabineros',
-                                    subject: 'Reporte de Parte',
-                                    text: resumen,
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        // Botón de compartir
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              final resumen = context
+                                  .read<ReporteBloc>()
+                                  .getResumenText();
+                              SharePlus.instance.share(
+                                ShareParams(
+                                  title: 'Reporte de Parte Carabineros',
+                                  subject: 'Reporte de Parte',
+                                  text: resumen,
                                 ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
-                              child: const Center(child: Icon(Icons.share)),
                             ),
+                            child: const Center(child: Icon(Icons.share)),
                           ),
-                          const SizedBox(width: 8),
-                          // Botón de gestión de tipos
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                final reporteBloc = context.read<ReporteBloc>();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => BlocProvider.value(
-                                      value: reporteBloc,
-                                      child: const TiposManagementPage(),
+                        ),
+                        const SizedBox(width: 8),
+                        // Botón de gestión de tipos
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              final reporteBloc = context.read<ReporteBloc>();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BlocProvider.value(
+                                    value: reporteBloc,
+                                    child: const TiposManagementPage(),
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: const Center(child: Icon(Icons.category)),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Botón de agregar campo
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton(
+                            onPressed: () =>
+                                context.read<ReporteBloc>().add(AddSeccion()),
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Agregar Campo',
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.white,
                                     ),
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              child: const Center(child: Icon(Icons.category)),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          // Botón de agregar campo
-                          Expanded(
-                            flex: 2,
-                            child: ElevatedButton(
-                              onPressed: () =>
-                                  context.read<ReporteBloc>().add(AddSeccion()),
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Agregar Campo',
-                                  style: Theme.of(context).textTheme.bodyLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.white,
-                                      ),
-                                  textAlign: TextAlign.center,
-                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
                 ),
               ),
           ],
@@ -422,7 +421,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 final tiposSugeridos =
-                  snapshot.data?.getStringList('novedad_tipos') ?? [];
+                    snapshot.data?.getStringList('novedad_tipos') ?? [];
                 return BlocProvider.value(
                   value: reporteBloc,
                   child: ReportDetailPage(
