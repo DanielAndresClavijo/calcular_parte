@@ -37,7 +37,7 @@ class AlertDialogBase extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancelar'),
         ),
-        if (confirmText != null && onConfirm != null)
+        if (confirmText != null || onConfirm != null)
           ElevatedButton(
             style: TextButton.styleFrom(
               backgroundColor: AppColors.primary,

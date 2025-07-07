@@ -79,7 +79,7 @@ class _AddNovedadDialogState extends State<AddNovedadDialog> {
                       )
                       .toList(),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (_newTipoController.text.isEmpty && (value == null || value.isEmpty)) {
                       return 'Por favor, seleccione un tipo.';
                     }
                     return null;
