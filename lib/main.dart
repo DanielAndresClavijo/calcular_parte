@@ -1,16 +1,9 @@
-import 'dart:io';
-
 import 'package:calcular_parte/theme/app_theme.dart';
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'screens/report_home_page.dart';
 
 void main() {
-  runApp(DevicePreview(
-    enabled: kIsWeb || Platform.isWindows,
-    builder: (_) => const ReportApp(),
-  ));
+  runApp(const ReportApp());
 }
 
 class ReportApp extends StatelessWidget {
@@ -22,8 +15,6 @@ class ReportApp extends StatelessWidget {
       title: 'Calcular Parte',
       theme: AppTheme.theme,
       home: const ReportHomePage(),
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
     );
   }
 }
