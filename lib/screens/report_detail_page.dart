@@ -15,14 +15,17 @@ import 'package:calcular_parte/widgets/edit_seccion_form_widget.dart';
 class ReportDetailPage extends StatefulWidget {
   final int index;
   final List<String> tiposSugeridos;
-  const ReportDetailPage({super.key, required this.index, required this.tiposSugeridos,});
+  const ReportDetailPage({
+    super.key,
+    required this.index,
+    required this.tiposSugeridos,
+  });
 
   @override
   State<ReportDetailPage> createState() => _ReportDetailPageState();
 }
 
 class _ReportDetailPageState extends State<ReportDetailPage> {
-
   @override
   Widget build(BuildContext context) {
     final detalleDefault = const NovedadDetalleDefault();
@@ -45,7 +48,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                 surfaceTintColor: AppColors.grey500,
                 centerTitle: true,
                 actionsPadding: const EdgeInsets.only(right: 16.0),
-                actions: [ const SizedBox.shrink() ],
+                actions: [const SizedBox.shrink()],
               ),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -100,16 +103,13 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     );
   }
 
-  void _addDetalle(
-    NovedadDetalle detalleDefault,
-    BuildContext context,
-  ) async {
+  void _addDetalle(NovedadDetalle detalleDefault, BuildContext context) async {
     final reporteBloc = context.read<ReporteBloc>();
-    
+
     // Obtener el estado actual del bloc para tener datos actualizados
     final currentState = reporteBloc.state;
     final currentSeccionData = currentState.secciones[widget.index];
-    
+
     final sinDefinirDetalle = currentSeccionData.det.firstWhere(
       (d) => d.tipo == detalleDefault.tipo,
       orElse: () => detalleDefault,
@@ -137,13 +137,16 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     );
   }
 
-    Widget _buildDetallesList(SeccionData seccionData, NovedadDetalle detalleDefault) {
+  Widget _buildDetallesList(
+    SeccionData seccionData,
+    NovedadDetalle detalleDefault,
+  ) {
     // Optimización: Calcular maxCantidad una sola vez para todos los items
     final totalNv = int.tryParse(seccionData.nv) ?? 0;
     final otrosDetallesSuma = seccionData.det
         .where((d) => d.tipo != detalleDefault.tipo)
         .fold<int>(0, (sum, d) => sum + d.cantidad);
-    
+
     // Pre-calcular todos los maxCantidad para evitar recálculos
     final Map<String, int> maxCantidadMap = {};
     for (final detalle in seccionData.det) {
@@ -151,18 +154,23 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
         if (detalle.tipo == detalleDefault.tipo) {
           maxCantidadMap[detalle.tipo] = totalNv - otrosDetallesSuma;
         } else {
-          maxCantidadMap[detalle.tipo] = totalNv - otrosDetallesSuma + detalle.cantidad;
+          maxCantidadMap[detalle.tipo] =
+              totalNv - otrosDetallesSuma + detalle.cantidad;
         }
       }
     }
-    
+    final tiposSugeridos = widget.tiposSugeridos
+        .where((e) => !seccionData.det.any((d) => d.tipo == e))
+        .toList();
+
     return SliverList.separated(
       separatorBuilder: (_, _) => const SizedBox(height: 8.0),
       itemCount: seccionData.det.length,
       itemBuilder: (context, index) {
         final detalle = seccionData.det.elementAt(index);
         final maxCantidad = maxCantidadMap[detalle.tipo] ?? 0;
-        
+        final tiposDisponibles = [detalle.tipo, ...tiposSugeridos];
+
         return RepaintBoundary(
           child: DetalleNovedadWidget(
             key: ValueKey('${detalle.tipo}_${detalle.cantidad}_$index'),
@@ -174,14 +182,13 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                 UpdateNovedadDetalle(widget.index, index, newDetalle),
               );
             },
-            tiposDisponibles: widget.tiposSugeridos,
+            tiposDisponibles: tiposDisponibles,
             onAddTipo: () {}, // No se usa por ahora
           ),
         );
       },
     );
   }
-
 }
 
 class _PersistentHeader extends SliverPersistentHeaderDelegate {

@@ -5,7 +5,7 @@ import 'package:calcular_parte/bloc/reporte_bloc.dart';
 import 'package:calcular_parte/bloc/reporte_event.dart';
 import 'package:calcular_parte/models/novedad_detalle.dart';
 import 'package:calcular_parte/models/seccion_data.dart';
-import 'package:calcular_parte/widgets/seccion_text_field_widget.dart';
+import 'package:calcular_parte/widgets/custom_text_field_widget.dart';
 
 class EditSeccionFormWidget extends StatefulWidget {
   final int index;
@@ -124,8 +124,9 @@ class _EditSeccionFormWidgetState extends State<EditSeccionFormWidget> {
             children: [
               SizedBox(
                 width: constraints.maxWidth,
-                child: SeccionTextFieldWidget(
+                child: CustomTextFieldWidget(
                   label: "Nombre de la sección:",
+                  keyboardType: TextInputType.text,
                   controller: _nombreSeccionController,
                   isSmallScreen: isSmallScreen,
                   focusNode: _nombreSeccionFocusNode,
@@ -136,7 +137,7 @@ class _EditSeccionFormWidgetState extends State<EditSeccionFormWidget> {
               ),
               SizedBox(
                 width: width,
-                child: SeccionTextFieldWidget(
+                child: CustomTextFieldWidget(
                   label: "Fuerza efectiva (FE):",
                   controller: _feController,
                   isSmallScreen: isSmallScreen,
@@ -148,7 +149,7 @@ class _EditSeccionFormWidgetState extends State<EditSeccionFormWidget> {
               ),
               SizedBox(
                 width: width,
-                child: SeccionTextFieldWidget(
+                child: CustomTextFieldWidget(
                   label: "Fuerza Disponible (FD):",
                   controller: _fdController,
                   isSmallScreen: isSmallScreen,
@@ -160,7 +161,7 @@ class _EditSeccionFormWidgetState extends State<EditSeccionFormWidget> {
               ),
               SizedBox(
                 width: width,
-                child: SeccionTextFieldWidget(
+                child: CustomTextFieldWidget(
                   label: "Novedades (NV):",
                   controller: _nvController,
                   isSmallScreen: isSmallScreen,

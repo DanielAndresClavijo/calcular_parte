@@ -114,7 +114,7 @@ class SeccionItemWidget extends StatelessWidget {
                     TextSpan(
                       text: seccionData.det.isEmpty
                           ? 'No hay detalles'
-                          : seccionData.det.map((d) => '  - ${d.emoji ?? ''} ${d.tipo}: ${d.cantidad}').join('\n'),
+                          : seccionData.det.map((d) => '${d.emoji ?? ''} ${d.tipo} (${d.cantidad})').join(', '),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.normal,
                         color: colorText,

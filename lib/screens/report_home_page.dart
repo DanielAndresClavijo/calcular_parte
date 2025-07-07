@@ -1,3 +1,4 @@
+import 'package:calcular_parte/widgets/alert_dialog_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -46,49 +47,22 @@ class _ReportHomeViewState extends State<ReportHomeView> {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Confirmar eliminación'),
-          backgroundColor: AppColors.white,
-          surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
+        return AlertDialogBase(
+          title: 'Confirmar eliminación',
           content: Text(
             '¿Estás seguro de que quieres eliminar ${_selectedSections.length} sección(es)?',
           ),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.secondary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text('Eliminar'),
-              onPressed: () {
-                context.read<ReporteBloc>().add(
-                  RemoveMultipleSecciones(_selectedSections.toList()),
-                );
-                setState(() {
-                  _isSelectionMode = false;
-                  _selectedSections.clear();
-                });
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-          ],
+          confirmText: 'Eliminar',
+          onConfirm: () {
+            context.read<ReporteBloc>().add(
+              RemoveMultipleSecciones(_selectedSections.toList()),
+            );
+            setState(() {
+              _isSelectionMode = false;
+              _selectedSections.clear();
+            });
+            Navigator.of(context).pop();
+          },
         );
       },
     );
