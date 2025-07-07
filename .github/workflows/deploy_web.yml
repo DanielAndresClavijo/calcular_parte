@@ -26,7 +26,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Flutter web app
-        run: flutter build web --release --base-href /calcular_parte/
+        run: flutter build web --debug --base-href /calcular_parte/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

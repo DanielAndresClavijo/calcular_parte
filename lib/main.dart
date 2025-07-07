@@ -20,7 +20,6 @@ class ReportApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Calcular Parte',
-      debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
       home: const ReportHomePage(),
       locale: DevicePreview.locale(context),
