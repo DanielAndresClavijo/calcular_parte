@@ -357,34 +357,36 @@ class _TiposManagementPageState extends State<TiposManagementPage> {
           : ListView.separated(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
               itemCount: _tipos.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              separatorBuilder: (_, _) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final tipo = _tipos[index];
-                return ListTile(
-                  leading: const Icon(Icons.category),
-                  tileColor: AppColors.grey200,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  contentPadding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-                  title: Text(
-                    tipo,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () => _showEditTipoDialog(tipo),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _showDeleteConfirmation(tipo),
-                      ),
-                    ],
+                return Card(
+                  margin: const EdgeInsets.all(0),
+                  child: ListTile(
+                    leading: const Icon(Icons.category),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    contentPadding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+                    title: Text(
+                      tipo,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () => _showEditTipoDialog(tipo),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _showDeleteConfirmation(tipo),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

@@ -13,9 +13,8 @@ class CardResumenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(8.0),
-      color: AppColors.grey200,
+    return Card(
+      margin: const EdgeInsets.all(0),
       clipBehavior: Clip.antiAlias,
       child: Container(
         alignment: Alignment.centerLeft,

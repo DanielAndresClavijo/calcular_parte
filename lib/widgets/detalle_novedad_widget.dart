@@ -1,7 +1,7 @@
-import 'package:calcular_parte/models/novedad_detalle.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
-import 'package:calcular_parte/widgets/cantidad_selector_widget.dart';
 import 'package:flutter/material.dart';
+
+import 'package:calcular_parte/models/novedad_detalle.dart';
+import 'package:calcular_parte/widgets/cantidad_selector_widget.dart';
 
 class DetalleNovedadWidget extends StatelessWidget {
   final NovedadDetalle detalle;
@@ -39,9 +39,8 @@ class DetalleNovedadWidget extends StatelessWidget {
         final widthQuantity = isWideScreen
             ? (constraints.maxWidth * 0.4) - 16
             : constraints.maxWidth;
-        return Material(
-          color: AppColors.grey200,
-          borderRadius: BorderRadius.circular(8.0),
+        return Card(
+          margin: const EdgeInsets.all(0),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Wrap(

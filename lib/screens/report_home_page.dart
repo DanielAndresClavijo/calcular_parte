@@ -288,6 +288,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.white,
                                       ),
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                             ),

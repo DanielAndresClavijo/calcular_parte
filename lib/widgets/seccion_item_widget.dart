@@ -21,10 +21,8 @@ class SeccionItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorText = isSelected ? AppColors.white : AppColors.black;
-    return Material(
-      borderRadius: BorderRadius.circular(8.0),
-      color: isSelected ? AppColors.primary : AppColors.grey200,
-      clipBehavior: Clip.antiAlias,
+    return Card(
+      margin: const EdgeInsets.all(0),
       child: InkWell(
         onTap: onTap != null ? () => onTap!(index) : null,
         onLongPress: onLongPress != null ? () => onLongPress!(index) : null,
@@ -122,7 +120,7 @@ class SeccionItemWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                maxLines: 3,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
