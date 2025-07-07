@@ -59,15 +59,9 @@ class DetalleNovedadWidget extends StatelessWidget {
                               child: Text(detalle.tipo),
                             ),
                           ]
-                        : [
-                            ...dropdownItems.map(
-                              (e) => DropdownMenuItem(value: e, child: Text(e)),
-                            ),
-                            const DropdownMenuItem(
-                              value: 'add_new',
-                              child: Text('➕ Agregar nuevo tipo...'),
-                            ),
-                          ],
+                        : dropdownItems.map(
+                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                          ).toList(),
                     onChanged: isSinDefinir
                         ? null
                         : (value) {

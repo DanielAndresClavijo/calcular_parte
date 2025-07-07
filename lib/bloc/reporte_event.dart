@@ -74,3 +74,13 @@ class RemoveNovedadDetalle extends ReporteEvent {
   @override
   List<Object> get props => [seccionIndex, detalleIndex];
 }
+
+class UpdateTipoInAllSections extends ReporteEvent {
+  final String oldTipo;
+  final String newTipo;
+
+  const UpdateTipoInAllSections(this.oldTipo, this.newTipo);
+
+  @override
+  List<Object> get props => [oldTipo, newTipo];
+}

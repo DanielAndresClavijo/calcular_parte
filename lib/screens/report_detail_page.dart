@@ -1,4 +1,5 @@
 import 'package:calcular_parte/models/novedad_detalle.dart';
+import 'package:calcular_parte/models/seccion_data.dart';
 import 'package:calcular_parte/widgets/add_novedad_dialog.dart';
 import 'package:calcular_parte/widgets/detalle_novedad_widget.dart';
 import 'package:calcular_parte/widgets/title_widget.dart';
@@ -27,9 +28,9 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     final detalleDefault = const NovedadDetalleDefault();
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: BlocBuilder<ReporteBloc, ReporteState>(
-        builder: (context, state) {
-          final seccionData = state.secciones[widget.index];
+      body: BlocSelector<ReporteBloc, ReporteState, SeccionData>(
+        selector: (state) => state.secciones[widget.index],
+        builder: (context, seccionData) {
           return CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -90,37 +91,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
               else
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  sliver: SliverList.separated(
-                    separatorBuilder: (_, _) => const SizedBox(height: 8.0),
-                    itemCount: seccionData.det.length,
-                    itemBuilder: (context, index) {
-                      final detalle = seccionData.det.elementAt(index);
-                      return DetalleNovedadWidget(
-                        key: ValueKey(detalle.tipo),
-                        detalle: detalle,
-                        maxCantidad: seccionData.det
-                            .where((d) => d.tipo != detalle.tipo)
-                            .fold((int.tryParse(seccionData.nv) ?? 0), (
-                              prev,
-                              element,
-                            ) {
-                              return prev -
-                                  (element.tipo == detalleDefault.tipo
-                                      ? 0
-                                      : element.cantidad);
-                            }),
-                        onRemove: () => _removeDetalle(context, index),
-                        onUpdate: (newDetalle) {
-                          context.read<ReporteBloc>().add(
-                            UpdateNovedadDetalle(
-                                widget.index, index, newDetalle),
-                          );
-                        },
-                        tiposDisponibles: widget.tiposSugeridos,
-                        onAddTipo: () {}, // No se usa por ahora
-                      );
-                    },
-                  ),
+                  sliver: _buildDetallesList(seccionData, detalleDefault),
                 ),
             ],
           );
@@ -163,6 +134,51 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
   void _removeDetalle(BuildContext context, int detIndex) {
     context.read<ReporteBloc>().add(
       RemoveNovedadDetalle(widget.index, detIndex),
+    );
+  }
+
+    Widget _buildDetallesList(SeccionData seccionData, NovedadDetalle detalleDefault) {
+    // Optimización: Calcular maxCantidad una sola vez para todos los items
+    final totalNv = int.tryParse(seccionData.nv) ?? 0;
+    final otrosDetallesSuma = seccionData.det
+        .where((d) => d.tipo != detalleDefault.tipo)
+        .fold<int>(0, (sum, d) => sum + d.cantidad);
+    
+    // Pre-calcular todos los maxCantidad para evitar recálculos
+    final Map<String, int> maxCantidadMap = {};
+    for (final detalle in seccionData.det) {
+      if (!maxCantidadMap.containsKey(detalle.tipo)) {
+        if (detalle.tipo == detalleDefault.tipo) {
+          maxCantidadMap[detalle.tipo] = totalNv - otrosDetallesSuma;
+        } else {
+          maxCantidadMap[detalle.tipo] = totalNv - otrosDetallesSuma + detalle.cantidad;
+        }
+      }
+    }
+    
+    return SliverList.separated(
+      separatorBuilder: (_, _) => const SizedBox(height: 8.0),
+      itemCount: seccionData.det.length,
+      itemBuilder: (context, index) {
+        final detalle = seccionData.det.elementAt(index);
+        final maxCantidad = maxCantidadMap[detalle.tipo] ?? 0;
+        
+        return RepaintBoundary(
+          child: DetalleNovedadWidget(
+            key: ValueKey('${detalle.tipo}_${detalle.cantidad}_$index'),
+            detalle: detalle,
+            maxCantidad: maxCantidad,
+            onRemove: () => _removeDetalle(context, index),
+            onUpdate: (newDetalle) {
+              context.read<ReporteBloc>().add(
+                UpdateNovedadDetalle(widget.index, index, newDetalle),
+              );
+            },
+            tiposDisponibles: widget.tiposSugeridos,
+            onAddTipo: () {}, // No se usa por ahora
+          ),
+        );
+      },
     );
   }
 

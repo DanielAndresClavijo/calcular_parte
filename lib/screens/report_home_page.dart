@@ -9,6 +9,7 @@ import 'package:calcular_parte/bloc/reporte_state.dart';
 import 'package:calcular_parte/models/resume_data.dart';
 import 'package:calcular_parte/models/seccion_data.dart';
 import 'package:calcular_parte/screens/report_detail_page.dart';
+import 'package:calcular_parte/screens/tipos_management_page.dart';
 import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:calcular_parte/widgets/card_resumen_widget.dart';
 import 'package:calcular_parte/widgets/seccion_item_widget.dart';
@@ -238,58 +239,88 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                 child: Material(
                   color: Colors.white,
                   elevation: 12,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            final resumen = context
-                                .read<ReporteBloc>()
-                                .getResumenText();
-                            SharePlus.instance.share(
-                              ShareParams(
-                                title: 'Reporte de Parte Carabineros',
-                                subject: 'Reporte de Parte',
-                                text: resumen,
+                                      child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          // Botón de compartir
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                final resumen = context
+                                    .read<ReporteBloc>()
+                                    .getResumenText();
+                                SharePlus.instance.share(
+                                  ShareParams(
+                                    title: 'Reporte de Parte Carabineros',
+                                    subject: 'Reporte de Parte',
+                                    text: resumen,
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
                               ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                              child: const Center(child: Icon(Icons.share)),
                             ),
                           ),
-                          child: Center(child: Icon(Icons.share)),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () =>
-                                context.read<ReporteBloc>().add(AddSeccion()),
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Agregar Campo',
-                                style: Theme.of(context).textTheme.bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.white,
+                          const SizedBox(width: 8),
+                          // Botón de gestión de tipos
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                final reporteBloc = context.read<ReporteBloc>();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BlocProvider.value(
+                                      value: reporteBloc,
+                                      child: const TiposManagementPage(),
                                     ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              child: const Center(child: Icon(Icons.category)),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Botón de agregar campo
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              onPressed: () =>
+                                  context.read<ReporteBloc>().add(AddSeccion()),
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Agregar Campo',
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.white,
+                                      ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                 ),
               ),
           ],

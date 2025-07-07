@@ -15,6 +15,7 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     on<UpdateNovedadDetalle>(_onUpdateNovedadDetalle);
     on<RemoveNovedadDetalle>(_onRemoveNovedadDetalle);
     on<AddNovedadDetalle>(_onAddNovedadDetalle);
+    on<UpdateTipoInAllSections>(_onUpdateTipoInAllSections);
   }
 
   void _onAddSeccion(AddSeccion event, Emitter<ReporteState> emit) {
@@ -70,8 +71,8 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
         newDet = _distributeNovedades(nvInt, seccionToUpdate.det);
       }
     } else {
-      nv = seccionToUpdate
-          .nv; // Mantener el valor anterior si los campos están vacíos
+      // Mantener el valor anterior si los campos están vacíos
+      nv = seccionToUpdate.nv;
       newDet = seccionToUpdate.det;
     }
 
@@ -393,5 +394,27 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     resumenText += state.resumen.getCopyText();
 
     return resumenText;
+  }
+
+  void _onUpdateTipoInAllSections(
+    UpdateTipoInAllSections event,
+    Emitter<ReporteState> emit,
+  ) {
+    final newSecciones = List<SeccionData>.from(state.secciones);
+    
+    for (int i = 0; i < newSecciones.length; i++) {
+      final seccion = newSecciones[i];
+      final updatedDet = seccion.det.map((detalle) {
+        if (detalle.tipo == event.oldTipo) {
+          return detalle.copyWith(tipo: event.newTipo);
+        }
+        return detalle;
+      }).toList();
+      
+      newSecciones[i] = seccion.copyWith(det: updatedDet);
+    }
+
+    final resumen = _calculateResumen(newSecciones);
+    emit(ReporteUpdated(newSecciones, resumen));
   }
 }
