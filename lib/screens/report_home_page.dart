@@ -1,18 +1,19 @@
-import 'package:calcular_parte/main.dart';
-import 'package:calcular_parte/widgets/alert_dialog_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:share_plus/share_plus.dart';
 
 import 'package:calcular_parte/bloc/reporte_bloc.dart';
 import 'package:calcular_parte/bloc/reporte_event.dart';
 import 'package:calcular_parte/bloc/reporte_state.dart';
+import 'package:calcular_parte/main.dart';
+import 'package:calcular_parte/models/novedad_detalle.dart';
 import 'package:calcular_parte/models/resume_data.dart';
 import 'package:calcular_parte/models/seccion_data.dart';
 import 'package:calcular_parte/screens/report_detail_page.dart';
+import 'package:calcular_parte/screens/settings_page.dart';
 import 'package:calcular_parte/screens/tipos_management_page.dart';
 import 'package:calcular_parte/theme/app_colors.dart';
+import 'package:calcular_parte/widgets/alert_dialog_base.dart';
 import 'package:calcular_parte/widgets/card_resumen_widget.dart';
 import 'package:calcular_parte/widgets/seccion_item_widget.dart';
 import 'package:calcular_parte/widgets/title_widget.dart';
@@ -65,25 +66,113 @@ class _ReportHomeViewState extends State<ReportHomeView> {
     );
   }
 
-  void _showClearDataDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialogBase(
-          title: 'Limpiar todos los datos',
-          content: const Text(
-            '¿Estás seguro de que quieres eliminar todos los datos de la aplicación? '
-            'Esta acción no se puede deshacer.',
+  Widget _buildTiposTotalesChips(List<SeccionData> secciones) {
+    // Calcular totales por tipo
+    final Map<String, int> tiposTotales = {};
+    
+    for (final seccion in secciones) {
+      for (final detalle in seccion.det) {
+        // Incluir todos los tipos, incluso con cantidad 0
+        tiposTotales[detalle.tipo] = (tiposTotales[detalle.tipo] ?? 0) + detalle.cantidad;
+      }
+    }
+
+    // Si no hay tipos, no mostrar nada
+    if (tiposTotales.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Ordenar: tipo por defecto primero, luego por cantidad (descendente) y luego por nombre
+    final sortedTipos = tiposTotales.entries.toList()
+      ..sort((a, b) {
+        // El tipo por defecto siempre va primero
+        if (a.key == NovedadDetalleDefault.tipoDefault) return -1;
+        if (b.key == NovedadDetalleDefault.tipoDefault) return 1;
+        
+        // Para el resto, ordenar por cantidad (descendente) y luego por nombre
+        if (b.value != a.value) {
+          return b.value.compareTo(a.value);
+        }
+        return a.key.compareTo(b.key);
+      });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.category, size: 20, color: AppColors.grey500),
+            const SizedBox(width: 8),
+            Text(
+              'Tipos por Sección',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                // fontWeight: FontWeight.bold,
+                color: AppColors.black,
+              ),
+            ),
+          ],
+        ),
+                const SizedBox(height: 12),
+        SizedBox(
+          height: 40, // Altura fija para los chips
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.only(right: 16),
+            itemCount: sortedTipos.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final entry = sortedTipos[index];
+              
+              // Determinar el color del chip basado en si es el tipo por defecto y la cantidad
+              final isDefaultType = entry.key == NovedadDetalleDefault.tipoDefault;
+              final hasQuantity = entry.value > 0;
+              
+              Color chipColor;
+              Color borderColor;
+              Color textColor;
+              
+              if (isDefaultType) {
+                chipColor = hasQuantity 
+                    ? AppColors.grey500!.withValues(alpha: 0.1)
+                    : AppColors.grey500!.withValues(alpha: 0.05);
+                borderColor = hasQuantity 
+                    ? AppColors.grey500!.withValues(alpha: 0.3)
+                    : AppColors.grey500!.withValues(alpha: 0.2);
+                textColor = hasQuantity ? AppColors.grey500! : AppColors.grey500!.withValues(alpha: 0.6);
+              } else {
+                chipColor = hasQuantity 
+                    ? AppColors.primary.withValues(alpha: 0.1)
+                    : AppColors.primary.withValues(alpha: 0.05);
+                borderColor = hasQuantity 
+                    ? AppColors.primary.withValues(alpha: 0.3)
+                    : AppColors.primary.withValues(alpha: 0.2);
+                textColor = hasQuantity ? AppColors.black : AppColors.black.withValues(alpha: 0.6);
+              }
+              
+              return Chip(
+                label: Text(
+                  '${entry.key} ${entry.value}',
+                  style: TextStyle(
+                    fontWeight: hasQuantity ? FontWeight.w500 : FontWeight.normal,
+                    fontSize: 12,
+                    color: textColor,
+                  ),
+                ),
+                backgroundColor: chipColor,
+                side: BorderSide(
+                  color: borderColor,
+                  width: 1,
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              );
+            },
           ),
-          confirmText: 'Limpiar',
-          onConfirm: () {
-            context.read<ReporteBloc>().add(ClearAppData());
-            Navigator.of(context).pop();
-          },
-        );
-      },
+        ),
+      ],
     );
   }
+
+
 
   @override
   void dispose() {
@@ -121,7 +210,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                       SliverPadding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         sliver: SliverToBoxAdapter(
-                          child: const TitleWidget('Total'),
+                          child: const TitleWidget('Totales'),
                         ),
                       ),
                     if (!_isSelectionMode)
@@ -165,6 +254,8 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                                         title: 'Novedades (NV)',
                                         details: resumen.nv,
                                       ),
+                                      const SizedBox(height: 16),
+                                      _buildTiposTotalesChips(context.read<ReporteBloc>().state.secciones),
                                     ],
                                   );
                                 },
@@ -233,29 +324,29 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        // Botón de compartir
+                        // Botón de ajustes
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              final resumen = context
-                                  .read<ReporteBloc>()
-                                  .getResumenText();
-                              SharePlus.instance.share(
-                                ShareParams(
-                                  title: 'Reporte de Parte Carabineros',
-                                  subject: 'Reporte de Parte',
-                                  text: resumen,
+                              final reporteBloc = context.read<ReporteBloc>();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BlocProvider.value(
+                                    value: reporteBloc,
+                                    child: const SettingsPage(),
+                                  ),
                                 ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: Colors.grey.shade600,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
-                            child: const Center(child: Icon(Icons.share)),
+                            child: const Center(child: Icon(Icons.settings)),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -368,13 +459,14 @@ class _ReportHomeViewState extends State<ReportHomeView> {
       title: Column(
         children: [
           const Text('Calcular Parte'),
-          Text(
-            'Escuela de Carabineros Alejandro Gutiérrez',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.normal,
-              color: AppColors.grey500,
+          if (nameApp.isNotEmpty)
+            Text(
+              nameApp,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.normal,
+                color: AppColors.grey500,
+              ),
             ),
-          ),
         ],
       ),
       titleTextStyle: Theme.of(
@@ -385,28 +477,6 @@ class _ReportHomeViewState extends State<ReportHomeView> {
       pinned: true,
       automaticallyImplyLeading: false,
       centerTitle: true,
-      actions: [
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert),
-          onSelected: (value) {
-            if (value == 'clear_data') {
-              _showClearDataDialog();
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'clear_data',
-              child: Row(
-                children: [
-                  Icon(Icons.delete_forever, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Limpiar todos los datos'),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 

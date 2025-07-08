@@ -71,12 +71,15 @@ class _SplashPageState extends State<SplashPage> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Escuela de Carabineros Alejandro Gutiérrez',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.grey500,
+            if (nameApp.isNotEmpty)
+              Text(
+                nameApp,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.grey500,
+                ),
               ),
-            ),
+            const SizedBox(height: 8),
+            const Text('Versión 2.0.0+0'),
             const SizedBox(height: 48),
             // Indicador de carga
             const CircularProgressIndicator(
