@@ -65,6 +65,26 @@ class _ReportHomeViewState extends State<ReportHomeView> {
     );
   }
 
+  void _showClearDataDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialogBase(
+          title: 'Limpiar todos los datos',
+          content: const Text(
+            '¿Estás seguro de que quieres eliminar todos los datos de la aplicación? '
+            'Esta acción no se puede deshacer.',
+          ),
+          confirmText: 'Limpiar',
+          onConfirm: () {
+            context.read<ReporteBloc>().add(ClearAppData());
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -348,14 +368,13 @@ class _ReportHomeViewState extends State<ReportHomeView> {
       title: Column(
         children: [
           const Text('Calcular Parte'),
-          if (nameApp.isNotEmpty)
-            Text(
-              nameApp,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.normal,
-                color: AppColors.grey500,
-              ),
+          Text(
+            'Escuela de Carabineros Alejandro Gutiérrez',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.normal,
+              color: AppColors.grey500,
             ),
+          ),
         ],
       ),
       titleTextStyle: Theme.of(
@@ -366,6 +385,28 @@ class _ReportHomeViewState extends State<ReportHomeView> {
       pinned: true,
       automaticallyImplyLeading: false,
       centerTitle: true,
+      actions: [
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) {
+            if (value == 'clear_data') {
+              _showClearDataDialog();
+            }
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: 'clear_data',
+              child: Row(
+                children: [
+                  Icon(Icons.delete_forever, color: Colors.red),
+                  SizedBox(width: 8),
+                  Text('Limpiar todos los datos'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

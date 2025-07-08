@@ -9,6 +9,12 @@ abstract class ReporteEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class LoadAppData extends ReporteEvent {}
+
+class SaveAppData extends ReporteEvent {}
+
+class ClearAppData extends ReporteEvent {}
+
 class LoadTiposSugeridos extends ReporteEvent {}
 
 class AddTipoSugerido extends ReporteEvent {
@@ -40,7 +46,6 @@ class RemoveTipoSugerido extends ReporteEvent {
 }
 
 class AddSeccion extends ReporteEvent {}
-
 
 class RemoveMultipleSecciones extends ReporteEvent {
   final List<int> indices;

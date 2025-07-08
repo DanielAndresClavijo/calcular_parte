@@ -2,6 +2,7 @@ import 'package:calcular_parte/models/novedad_detalle.dart';
 import 'package:calcular_parte/models/resume_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 import 'package:calcular_parte/bloc/reporte_event.dart';
 import 'package:calcular_parte/bloc/reporte_state.dart';
@@ -9,6 +10,9 @@ import 'package:calcular_parte/models/seccion_data.dart';
 
 class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
   ReporteBloc() : super(ReporteInitial()) {
+    on<LoadAppData>(_onLoadAppData);
+    on<SaveAppData>(_onSaveAppData);
+    on<ClearAppData>(_onClearAppData);
     on<LoadTiposSugeridos>(_onLoadTiposSugeridos);
     on<AddTipoSugerido>(_onAddTipoSugerido);
     on<UpdateTipoSugerido>(_onUpdateTipoSugerido);
@@ -21,6 +25,55 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     on<RemoveNovedadDetalle>(_onRemoveNovedadDetalle);
     on<AddNovedadDetalle>(_onAddNovedadDetalle);
     on<UpdateTipoInAllSections>(_onUpdateTipoInAllSections);
+  }
+
+  Future<void> _onLoadAppData(
+    LoadAppData event,
+    Emitter<ReporteState> emit,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Cargar tipos sugeridos
+      final tiposSugeridos = prefs.getStringList('novedad_tipos') ?? [];
+      
+      // Cargar secciones
+      final seccionesJson = prefs.getString('secciones_data');
+      List<SeccionData> secciones = [];
+      
+      if (seccionesJson != null) {
+        final List<dynamic> seccionesList = json.decode(seccionesJson);
+        secciones = seccionesList.map((json) => SeccionData.fromJson(json)).toList();
+      }
+      
+      // Calcular resumen
+      final resumen = _calculateResumen(secciones);
+      
+      emit(ReporteUpdated(secciones, resumen, tiposSugeridos));
+    } catch (e) {
+      // En caso de error, mantener el estado inicial
+      emit(ReporteUpdated([], ResumeData(), []));
+    }
+  }
+
+  Future<void> _onSaveAppData(
+    SaveAppData event,
+    Emitter<ReporteState> emit,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Guardar secciones
+      final seccionesJson = json.encode(
+        state.secciones.map((seccion) => seccion.toJson()).toList(),
+      );
+      await prefs.setString('secciones_data', seccionesJson);
+      
+      // Guardar tipos sugeridos
+      await prefs.setStringList('novedad_tipos', state.tiposSugeridos);
+    } catch (e) {
+      // En caso de error, no hacer nada
+    }
   }
 
   Future<void> _onLoadTiposSugeridos(
@@ -96,7 +149,11 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
       ..add(newSeccion);
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
+    final newState = ReporteUpdated(newSecciones, resumen, state.tiposSugeridos);
+    emit(newState);
+    
+    // Guardar automáticamente después de agregar sección
+    add(SaveAppData());
   }
 
   void _onRemoveMultipleSecciones(
@@ -110,7 +167,11 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     }
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
+    final newState = ReporteUpdated(newSecciones, resumen, state.tiposSugeridos);
+    emit(newState);
+    
+    // Guardar automáticamente después de eliminar secciones
+    add(SaveAppData());
   }
 
   void _onUpdateSeccion(UpdateSeccion event, Emitter<ReporteState> emit) {
@@ -151,7 +212,11 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
 
     newSecciones[event.index] = updatedSeccion;
 
-    emit(ReporteUpdated(newSecciones, _calculateResumen(newSecciones), state.tiposSugeridos));
+    final newState = ReporteUpdated(newSecciones, _calculateResumen(newSecciones), state.tiposSugeridos);
+    emit(newState);
+    
+    // Guardar automáticamente después de actualizar sección
+    add(SaveAppData());
   }
 
   void _onUpdateSeccionName(
@@ -166,7 +231,11 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     newSecciones[event.index] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
+    final newState = ReporteUpdated(newSecciones, resumen, state.tiposSugeridos);
+    emit(newState);
+    
+    // Guardar automáticamente después de actualizar nombre
+    add(SaveAppData());
   }
 
   void _onUpdateNovedadDetalle(
@@ -211,7 +280,11 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     newSecciones[event.seccionIndex] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
+    final newState = ReporteUpdated(newSecciones, resumen, state.tiposSugeridos);
+    emit(newState);
+    
+    // Guardar automáticamente después de eliminar novedad detalle
+    add(SaveAppData());
   }
 
   void _onRemoveNovedadDetalle(
@@ -251,7 +324,11 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     newSecciones[event.seccionIndex] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
+    final newState = ReporteUpdated(newSecciones, resumen, state.tiposSugeridos);
+    emit(newState);
+    
+    // Guardar automáticamente después de agregar novedad detalle
+    add(SaveAppData());
   }
 
   void _onAddNovedadDetalle(
@@ -290,7 +367,11 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     newSecciones[event.seccionIndex] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
+    final newState = ReporteUpdated(newSecciones, resumen, state.tiposSugeridos);
+    emit(newState);
+    
+    // Guardar automáticamente después de actualizar tipo en todas las secciones
+    add(SaveAppData());
   }
 
   // Métodos auxiliares para mejorar la legibilidad y reutilización
@@ -482,5 +563,23 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
 
     final resumen = _calculateResumen(newSecciones);
     emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
+  }
+
+  Future<void> _onClearAppData(
+    ClearAppData event,
+    Emitter<ReporteState> emit,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Limpiar todos los datos
+      await prefs.remove('secciones_data');
+      await prefs.remove('novedad_tipos');
+      
+      // Emitir estado inicial
+      emit(ReporteUpdated([], ResumeData(), []));
+    } catch (e) {
+      // En caso de error, mantener el estado actual
+    }
   }
 }

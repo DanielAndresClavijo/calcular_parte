@@ -22,9 +22,9 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _loadData() async {
-    // Cargar los tipos sugeridos desde SharedPreferences
+    // Cargar todos los datos de la aplicación desde SharedPreferences
     final reporteBloc = context.read<ReporteBloc>();
-    reporteBloc.add(LoadTiposSugeridos());
+    reporteBloc.add(LoadAppData());
 
     // Simular un pequeño delay para mostrar la splash
     await Future.delayed(const Duration(milliseconds: 1500));
@@ -71,15 +71,12 @@ class _SplashPageState extends State<SplashPage> {
               ),
             ),
             const SizedBox(height: 8),
-            if (nameApp.isNotEmpty)
-              Text(
-                nameApp,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.grey500,
-                ),
+            Text(
+              'Escuela de Carabineros Alejandro Gutiérrez',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.grey500,
               ),
-            const SizedBox(height: 8),
-            const Text('Versión 2.0.0+0'),
+            ),
             const SizedBox(height: 48),
             // Indicador de carga
             const CircularProgressIndicator(
