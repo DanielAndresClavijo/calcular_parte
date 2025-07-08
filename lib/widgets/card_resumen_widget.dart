@@ -14,6 +14,7 @@ class CardResumenWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
       margin: const EdgeInsets.all(0),
       clipBehavior: Clip.antiAlias,
       child: Container(

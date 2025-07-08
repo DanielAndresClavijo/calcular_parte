@@ -48,11 +48,13 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
             sliver: SliverToBoxAdapter(
               child: Card(
+                elevation: 0,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
                   child: Wrap(
                     spacing: 16,
                     runSpacing: 16,
+                    alignment: WrapAlignment.spaceBetween,
                     children: [
                       SizedBox(
                         width: double.infinity,
@@ -115,6 +117,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                 itemBuilder: (context, index) {
                   final detalle = seccionData.det.elementAt(index);
                   return Card(
+                    elevation: 0,
                     child: ListTile(
                       leading: Icon(Icons.category),
                       title: Text(detalle.tipo),
