@@ -15,6 +15,7 @@ import 'package:calcular_parte/screens/tipos_management_page.dart';
 import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:calcular_parte/widgets/alert_dialog_base.dart';
 import 'package:calcular_parte/widgets/card_resumen_widget.dart';
+import 'package:calcular_parte/widgets/estadisticas_modal.dart';
 import 'package:calcular_parte/widgets/seccion_item_widget.dart';
 import 'package:calcular_parte/widgets/title_widget.dart';
 
@@ -250,9 +251,13 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                                         ),
                                       ),
                                       const SizedBox(height: 16),
-                                      CardResumenWidget(
-                                        title: 'Novedades (NV)',
-                                        details: resumen.nv,
+                                      GestureDetector(
+                                        onTap: () => _showEstadisticasModal(context),
+                                        child: CardResumenWidget(
+                                          title: 'Novedades (NV)',
+                                          details: resumen.nv,
+                                          isClickable: true,
+                                        ),
                                       ),
                                       const SizedBox(height: 16),
                                       _buildTiposTotalesChips(context.read<ReporteBloc>().state.secciones),
@@ -532,6 +537,17 @@ class _ReportHomeViewState extends State<ReportHomeView> {
           );
         },
       ),
+    );
+  }
+
+  void _showEstadisticasModal(BuildContext context) {
+    final secciones = context.read<ReporteBloc>().state.secciones;
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => EstadisticasModal(secciones: secciones),
     );
   }
 }
