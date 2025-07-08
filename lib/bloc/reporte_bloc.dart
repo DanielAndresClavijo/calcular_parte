@@ -532,6 +532,18 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     return newDetalles;
   }
 
+  Map<String, int> _calcularTiposTotales() {
+    final Map<String, int> tiposTotales = {};
+    
+    for (final seccion in state.secciones) {
+      for (final detalle in seccion.det) {
+        tiposTotales[detalle.tipo] = (tiposTotales[detalle.tipo] ?? 0) + detalle.cantidad;
+      }
+    }
+    
+    return tiposTotales;
+  }
+
   String getResumenText() {
     String resumenText = '📝 RESUMEN POR SECCIÓN\n\n';
     for (int i = 0; i < state.secciones.length; i++) {
@@ -539,6 +551,26 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     }
     resumenText += '\n📝 RESUMEN TOTAL:\n\n';
     resumenText += state.resumen.getCopyText();
+    
+    // Agregar totales por tipo
+    final tiposTotales = _calcularTiposTotales();
+    if (tiposTotales.isNotEmpty) {
+      resumenText += '\n\n📊 TOTALES POR TIPO NV:\n\n';
+      
+      // Ordenar tipos: tipo por defecto primero, luego por cantidad descendente
+      final sortedTipos = tiposTotales.entries.toList()
+        ..sort((a, b) {
+          if (a.key == NovedadDetalleDefault.tipoDefault) return -1;
+          if (b.key == NovedadDetalleDefault.tipoDefault) return 1;
+          return b.value.compareTo(a.value);
+        });
+      
+      for (final entry in sortedTipos) {
+        final isDefaultType = entry.key == NovedadDetalleDefault.tipoDefault;
+        final icon = isDefaultType ? '⚪' : '🔵';
+        resumenText += '$icon ${entry.key}: ${entry.value}\n';
+      }
+    }
 
     return resumenText;
   }
