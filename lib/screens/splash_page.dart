@@ -81,7 +81,7 @@ class _SplashPageState extends State<SplashPage> {
                 ),
               ),
             const SizedBox(height: 8),
-            const Text('Versión 2.1.0+100'),
+            const Text('Versión 2.2.0+100'),
             const SizedBox(height: 48),
             // Indicador de carga
             CircularProgressIndicator(
