@@ -11,11 +11,9 @@ import 'package:calcular_parte/widgets/title_widget.dart';
 
 class ReportDetailPage extends StatefulWidget {
   final int index;
-  final List<String> tiposSugeridos;
   const ReportDetailPage({
     super.key,
     required this.index,
-    required this.tiposSugeridos,
   });
 
   @override
@@ -193,7 +191,6 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
           value: reporteBloc,
           child: ReportEditPage(
             index: widget.index,
-            tiposSugeridos: widget.tiposSugeridos,
           ),
         ),
       ),

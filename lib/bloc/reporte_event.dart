@@ -9,6 +9,36 @@ abstract class ReporteEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class LoadTiposSugeridos extends ReporteEvent {}
+
+class AddTipoSugerido extends ReporteEvent {
+  final String nuevoTipo;
+
+  const AddTipoSugerido(this.nuevoTipo);
+
+  @override
+  List<Object> get props => [nuevoTipo];
+}
+
+class UpdateTipoSugerido extends ReporteEvent {
+  final String oldTipo;
+  final String newTipo;
+
+  const UpdateTipoSugerido(this.oldTipo, this.newTipo);
+
+  @override
+  List<Object> get props => [oldTipo, newTipo];
+}
+
+class RemoveTipoSugerido extends ReporteEvent {
+  final String tipo;
+
+  const RemoveTipoSugerido(this.tipo);
+
+  @override
+  List<Object> get props => [tipo];
+}
+
 class AddSeccion extends ReporteEvent {}
 
 

@@ -14,11 +14,9 @@ import 'package:calcular_parte/widgets/title_widget.dart';
 
 class ReportEditPage extends StatefulWidget {
   final int index;
-  final List<String> tiposSugeridos;
   const ReportEditPage({
     super.key,
     required this.index,
-    required this.tiposSugeridos,
   });
 
   @override
@@ -116,10 +114,11 @@ class _ReportEditPageState extends State<ReportEditPage> {
     );
     final cantidadDisponible = sinDefinirDetalle.cantidad;
 
+    final tiposSugeridos = context.read<ReporteBloc>().state.tiposSugeridos;
     final newNovedad = await showDialog<NovedadDetalle>(
       context: context,
       builder: (context) => AddNovedadDialog(
-        tiposSugeridos: widget.tiposSugeridos,
+        tiposSugeridos: tiposSugeridos,
         tiposExistentes: currentSeccionData.det.map((d) => d.tipo).toList(),
         cantidadDisponible: cantidadDisponible,
       ),
@@ -159,7 +158,7 @@ class _ReportEditPageState extends State<ReportEditPage> {
         }
       }
     }
-    final tiposSugeridos = widget.tiposSugeridos
+    final tiposSugeridos = context.read<ReporteBloc>().state.tiposSugeridos
         .where((e) => !seccionData.det.any((d) => d.tipo == e))
         .toList();
 

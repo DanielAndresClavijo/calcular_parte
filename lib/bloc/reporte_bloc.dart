@@ -1,6 +1,7 @@
 import 'package:calcular_parte/models/novedad_detalle.dart';
 import 'package:calcular_parte/models/resume_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:calcular_parte/bloc/reporte_event.dart';
 import 'package:calcular_parte/bloc/reporte_state.dart';
@@ -8,6 +9,10 @@ import 'package:calcular_parte/models/seccion_data.dart';
 
 class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
   ReporteBloc() : super(ReporteInitial()) {
+    on<LoadTiposSugeridos>(_onLoadTiposSugeridos);
+    on<AddTipoSugerido>(_onAddTipoSugerido);
+    on<UpdateTipoSugerido>(_onUpdateTipoSugerido);
+    on<RemoveTipoSugerido>(_onRemoveTipoSugerido);
     on<AddSeccion>(_onAddSeccion);
     on<RemoveMultipleSecciones>(_onRemoveMultipleSecciones);
     on<UpdateSeccion>(_onUpdateSeccion);
@@ -16,6 +21,67 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     on<RemoveNovedadDetalle>(_onRemoveNovedadDetalle);
     on<AddNovedadDetalle>(_onAddNovedadDetalle);
     on<UpdateTipoInAllSections>(_onUpdateTipoInAllSections);
+  }
+
+  Future<void> _onLoadTiposSugeridos(
+    LoadTiposSugeridos event,
+    Emitter<ReporteState> emit,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final tiposSugeridos = prefs.getStringList('novedad_tipos') ?? [];
+      emit(ReporteUpdated(state.secciones, state.resumen, tiposSugeridos));
+    } catch (e) {
+      // En caso de error, mantener el estado actual con lista vacía
+      emit(ReporteUpdated(state.secciones, state.resumen, []));
+    }
+  }
+
+  Future<void> _onAddTipoSugerido(
+    AddTipoSugerido event,
+    Emitter<ReporteState> emit,
+  ) async {
+    try {
+      final newTipos = {...state.tiposSugeridos, event.nuevoTipo};
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('novedad_tipos', newTipos.toList());
+      emit(ReporteUpdated(state.secciones, state.resumen, newTipos.toList()));
+    } catch (e) {
+      // En caso de error, mantener el estado actual
+    }
+  }
+
+  Future<void> _onUpdateTipoSugerido(
+    UpdateTipoSugerido event,
+    Emitter<ReporteState> emit,
+  ) async {
+    try {
+      final newTipos = List<String>.from(state.tiposSugeridos);
+      final index = newTipos.indexOf(event.oldTipo);
+      if (index != -1) {
+        newTipos[index] = event.newTipo;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setStringList('novedad_tipos', newTipos);
+        emit(ReporteUpdated(state.secciones, state.resumen, newTipos));
+      }
+    } catch (e) {
+      // En caso de error, mantener el estado actual
+    }
+  }
+
+  Future<void> _onRemoveTipoSugerido(
+    RemoveTipoSugerido event,
+    Emitter<ReporteState> emit,
+  ) async {
+    try {
+      final newTipos = List<String>.from(state.tiposSugeridos);
+      newTipos.remove(event.tipo);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('novedad_tipos', newTipos);
+      emit(ReporteUpdated(state.secciones, state.resumen, newTipos));
+    } catch (e) {
+      // En caso de error, mantener el estado actual
+    }
   }
 
   void _onAddSeccion(AddSeccion event, Emitter<ReporteState> emit) {
@@ -30,7 +96,7 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
       ..add(newSeccion);
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen));
+    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
   }
 
   void _onRemoveMultipleSecciones(
@@ -44,7 +110,7 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     }
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen));
+    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
   }
 
   void _onUpdateSeccion(UpdateSeccion event, Emitter<ReporteState> emit) {
@@ -85,7 +151,7 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
 
     newSecciones[event.index] = updatedSeccion;
 
-    emit(ReporteUpdated(newSecciones, _calculateResumen(newSecciones)));
+    emit(ReporteUpdated(newSecciones, _calculateResumen(newSecciones), state.tiposSugeridos));
   }
 
   void _onUpdateSeccionName(
@@ -100,7 +166,7 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     newSecciones[event.index] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen));
+    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
   }
 
   void _onUpdateNovedadDetalle(
@@ -145,7 +211,7 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     newSecciones[event.seccionIndex] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen));
+    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
   }
 
   void _onRemoveNovedadDetalle(
@@ -185,7 +251,7 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     newSecciones[event.seccionIndex] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen));
+    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
   }
 
   void _onAddNovedadDetalle(
@@ -224,7 +290,7 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     newSecciones[event.seccionIndex] = updatedSeccion;
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen));
+    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
   }
 
   // Métodos auxiliares para mejorar la legibilidad y reutilización
@@ -415,6 +481,6 @@ class ReporteBloc extends Bloc<ReporteEvent, ReporteState> {
     }
 
     final resumen = _calculateResumen(newSecciones);
-    emit(ReporteUpdated(newSecciones, resumen));
+    emit(ReporteUpdated(newSecciones, resumen, state.tiposSugeridos));
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:calcular_parte/bloc/reporte_bloc.dart';
+import 'package:calcular_parte/bloc/reporte_event.dart';
 import 'package:calcular_parte/models/novedad_detalle.dart';
 import 'package:calcular_parte/widgets/alert_dialog_base.dart';
 import 'package:calcular_parte/widgets/custom_text_field_widget.dart';
@@ -175,24 +177,15 @@ class _AddNovedadDialogState extends State<AddNovedadDialog> {
         .isNotEmpty;
   }
 
-  Future<void> _saveTipo(String tipo) async {
-    if (!widget.tiposSugeridos.any(
-      (e) => e.toLowerCase() == tipo.toLowerCase(),
-    )) {
-      final newTipos = {...widget.tiposSugeridos, tipo};
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('novedad_tipos', newTipos.toList());
-    }
-  }
-
   void _onGuardar() {
     if (_formKey.currentState!.validate()) {
       final tipo = _tipoSeleccionado ?? _newTipoController.text;
       final cantidad = int.tryParse(_cantidadController.text) ?? 0;
 
       if (tipo.isNotEmpty) {
+        // Si es un nuevo tipo, agregarlo al bloc
         if (_tipoSeleccionado == null) {
-          _saveTipo(tipo);
+          context.read<ReporteBloc>().add(AddTipoSugerido(tipo));
         }
         Navigator.of(
           context,
@@ -200,5 +193,4 @@ class _AddNovedadDialogState extends State<AddNovedadDialog> {
       }
     }
   }
-
 }
