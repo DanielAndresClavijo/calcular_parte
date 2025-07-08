@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:calcular_parte/theme/app_colors.dart';
+
 
 class AlertDialogBase extends StatelessWidget {
   final String title;
@@ -22,14 +22,14 @@ class AlertDialogBase extends StatelessWidget {
     return AlertDialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Text(title),
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       content: content,
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
-            foregroundColor: AppColors.error,
+            foregroundColor: Colors.red,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
@@ -40,8 +40,8 @@ class AlertDialogBase extends StatelessWidget {
         if (confirmText != null || onConfirm != null)
           ElevatedButton(
             style: TextButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              disabledBackgroundColor: AppColors.grey200,
+              backgroundColor: Theme.of(context).primaryColor,
+              disabledBackgroundColor: Theme.of(context).colorScheme.surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),

@@ -1,4 +1,3 @@
-import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CardResumenWidget extends StatelessWidget {
@@ -20,9 +19,9 @@ class CardResumenWidget extends StatelessWidget {
       margin: const EdgeInsets.all(0),
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(8),
         side: isClickable ? BorderSide(
-          color: AppColors.primary.withValues(alpha: 0.3),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
           width: 1,
         ) : BorderSide.none,
       ),
@@ -39,7 +38,7 @@ class CardResumenWidget extends StatelessWidget {
                     title,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.normal,
-                      color: AppColors.grey700,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ),
@@ -47,7 +46,7 @@ class CardResumenWidget extends StatelessWidget {
                   Icon(
                     Icons.analytics,
                     size: 16,
-                    color: AppColors.primary,
+                    color: Theme.of(context).primaryColor,
                   ),
               ],
             ),
@@ -56,7 +55,7 @@ class CardResumenWidget extends StatelessWidget {
               details.isEmpty ? '0' : details,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.normal,
-                color: AppColors.black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],

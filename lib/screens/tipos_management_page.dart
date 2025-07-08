@@ -3,7 +3,7 @@ import 'package:calcular_parte/widgets/card_resumen_widget.dart';
 import 'package:calcular_parte/widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
+
 import 'package:calcular_parte/bloc/reporte_bloc.dart';
 import 'package:calcular_parte/bloc/reporte_event.dart';
 import 'package:calcular_parte/bloc/reporte_state.dart';
@@ -315,12 +315,12 @@ class _TiposManagementPageState extends State<TiposManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Gestión de Tipos'),
-        backgroundColor: AppColors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         surfaceTintColor: Colors.transparent,
-        foregroundColor: AppColors.black,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
       ),
       body: BlocBuilder<ReporteBloc, ReporteState>(
         builder: (context, state) {
@@ -392,8 +392,8 @@ class _TiposManagementPageState extends State<TiposManagementPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddTipoDialog,
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: AppColors.white),
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Icon(Icons.add, color: Theme.of(context).scaffoldBackgroundColor),
       ),
     );
   }

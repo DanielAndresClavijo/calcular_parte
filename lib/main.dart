@@ -1,4 +1,5 @@
 import 'package:calcular_parte/bloc/reporte_bloc.dart';
+import 'package:calcular_parte/bloc/theme_cubit.dart';
 import 'package:calcular_parte/screens/splash_page.dart';
 import 'package:calcular_parte/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -15,12 +16,27 @@ class ReportApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ReporteBloc(),
-      child: MaterialApp(
-        title: 'Calcular Parte${nameApp.isNotEmpty ? ' - $nameApp' : ''}',
-        theme: AppTheme.theme,
-        home: const SplashPage(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => ReporteBloc()),
+        BlocProvider(create: (_) => ThemeCubit()),
+      ],
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, themeState) {
+          ThemeMode themeMode = ThemeMode.light;
+          
+          if (themeState is ThemeLoaded) {
+            themeMode = themeState.themeMode;
+          }
+          
+          return MaterialApp(
+            title: 'Calcular Parte${nameApp.isNotEmpty ? ' - $nameApp' : ''}',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeMode,
+            home: const SplashPage(),
+          );
+        },
       ),
     );
   }

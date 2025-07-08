@@ -78,7 +78,7 @@ class CustomTextFieldWidget extends StatelessWidget {
                   ? const UnderlineInputBorder()
                   : const OutlineInputBorder(),
               filled: true,
-              fillColor: backgroundColor ?? Colors.white,
+              fillColor: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 8.0,
                 vertical: 8.0,

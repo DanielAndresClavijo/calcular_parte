@@ -125,7 +125,7 @@ class _EditSeccionFormWidgetState extends State<EditSeccionFormWidget> {
   Widget build(BuildContext context) {
     final nvBackgroundColor = widget.data.nv == "!"
         ? Colors.red.shade200
-        : Colors.white;
+        : Theme.of(context).scaffoldBackgroundColor;
 
     return Form(
       child: LayoutBuilder(

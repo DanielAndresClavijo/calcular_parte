@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calcular_parte/bloc/reporte_bloc.dart';
 import 'package:calcular_parte/bloc/reporte_event.dart';
 import 'package:calcular_parte/screens/report_home_page.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -42,7 +41,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -70,7 +69,7 @@ class _SplashPageState extends State<SplashPage> {
               'Calcular Parte',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -78,15 +77,15 @@ class _SplashPageState extends State<SplashPage> {
               Text(
                 nameApp,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.grey500,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             const SizedBox(height: 8),
             const Text('Versión 2.1.0+100'),
             const SizedBox(height: 48),
             // Indicador de carga
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
             ),
           ],
         ),

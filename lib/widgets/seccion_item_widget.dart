@@ -1,5 +1,4 @@
 import 'package:calcular_parte/models/seccion_data.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SeccionItemWidget extends StatelessWidget {
@@ -20,9 +19,9 @@ class SeccionItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorText = isSelected ? AppColors.white : AppColors.black;
+    final colorText = isSelected ? Theme.of(context).scaffoldBackgroundColor : Theme.of(context).colorScheme.onSurface;
     return Card(
-      color: isSelected ? AppColors.primary : null,
+      color: isSelected ? Theme.of(context).primaryColor : null,
       margin: const EdgeInsets.all(0),
       clipBehavior: Clip.antiAlias,
       child: InkWell(

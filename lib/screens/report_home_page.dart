@@ -12,7 +12,6 @@ import 'package:calcular_parte/models/seccion_data.dart';
 import 'package:calcular_parte/screens/report_detail_page.dart';
 import 'package:calcular_parte/screens/settings_page.dart';
 import 'package:calcular_parte/screens/tipos_management_page.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:calcular_parte/widgets/alert_dialog_base.dart';
 import 'package:calcular_parte/widgets/card_resumen_widget.dart';
 import 'package:calcular_parte/widgets/estadisticas_modal.dart';
@@ -102,13 +101,13 @@ class _ReportHomeViewState extends State<ReportHomeView> {
       children: [
         Row(
           children: [
-            Icon(Icons.category, size: 20, color: AppColors.grey500),
+            Icon(Icons.category, size: 20, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
             const SizedBox(width: 8),
             Text(
               'Tipos por Sección',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 // fontWeight: FontWeight.bold,
-                color: AppColors.black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],
@@ -134,20 +133,20 @@ class _ReportHomeViewState extends State<ReportHomeView> {
               
               if (isDefaultType) {
                 chipColor = hasQuantity 
-                    ? AppColors.grey500!.withValues(alpha: 0.1)
-                    : AppColors.grey500!.withValues(alpha: 0.05);
+                    ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05);
                 borderColor = hasQuantity 
-                    ? AppColors.grey500!.withValues(alpha: 0.3)
-                    : AppColors.grey500!.withValues(alpha: 0.2);
-                textColor = hasQuantity ? AppColors.grey500! : AppColors.grey500!.withValues(alpha: 0.6);
+                    ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3)
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
+                textColor = hasQuantity ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
               } else {
                 chipColor = hasQuantity 
-                    ? AppColors.primary.withValues(alpha: 0.1)
-                    : AppColors.primary.withValues(alpha: 0.05);
+                    ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
+                    : Theme.of(context).primaryColor.withValues(alpha: 0.05);
                 borderColor = hasQuantity 
-                    ? AppColors.primary.withValues(alpha: 0.3)
-                    : AppColors.primary.withValues(alpha: 0.2);
-                textColor = hasQuantity ? AppColors.black : AppColors.black.withValues(alpha: 0.6);
+                    ? Theme.of(context).primaryColor.withValues(alpha: 0.3)
+                    : Theme.of(context).primaryColor.withValues(alpha: 0.2);
+                textColor = hasQuantity ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
               }
               
               return Chip(
@@ -270,7 +269,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                     SliverAppBar(
                       title: const TitleWidget('Secciones'),
                       pinned: true,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                       surfaceTintColor: Colors.transparent,
                       automaticallyImplyLeading: false,
                     ),
@@ -323,7 +322,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                 right: 0,
                 height: 75,
                 child: Material(
-                  color: Colors.white,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   elevation: 12,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -396,10 +395,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
                               child: Text(
                                 'Agregar Campo',
                                 style: Theme.of(context).textTheme.bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.white,
-                                    ),
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -454,7 +450,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
           ),
         ],
         pinned: true,
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
         centerTitle: true,
@@ -469,7 +465,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
               nameApp,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.normal,
-                color: AppColors.grey500,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
         ],
@@ -477,7 +473,7 @@ class _ReportHomeViewState extends State<ReportHomeView> {
       titleTextStyle: Theme.of(
         context,
       ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.normal),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       pinned: true,
       automaticallyImplyLeading: false,

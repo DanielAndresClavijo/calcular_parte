@@ -6,7 +6,6 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:calcular_parte/bloc/reporte_bloc.dart';
 import 'package:calcular_parte/screens/report_edit_page.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:calcular_parte/widgets/title_widget.dart';
 
 class ReportDetailPage extends StatefulWidget {
@@ -27,7 +26,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
         .select<ReporteBloc, ReporteState>((state) => state.state)
         .secciones[widget.index];
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -38,8 +37,8 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
-            backgroundColor: AppColors.white,
-            surfaceTintColor: AppColors.grey500,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            surfaceTintColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.12),
             centerTitle: true,
             actionsPadding: const EdgeInsets.only(right: 16.0),
             actions: [const SizedBox.shrink()],
@@ -91,7 +90,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
             pinned: true,
             delegate: _PersistentHeader(
               child: Material(
-                color: AppColors.white,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24, 0, 16, 0),
                   child: const TitleWidget('Detalle de Novedades'),
@@ -130,7 +129,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        color: AppColors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Row(
           children: [
             Expanded(
@@ -160,8 +159,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                 ),
                 label: const Text('Editar'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.white,
+                  backgroundColor: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -208,12 +206,12 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 20, color: AppColors.grey500),
+            Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
             const SizedBox(width: 8),
             Text(
               label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.grey500,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -223,7 +221,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
         Text(
           value.isEmpty ? '0' : value,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AppColors.black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

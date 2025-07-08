@@ -1,4 +1,3 @@
-import 'package:calcular_parte/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -109,8 +108,8 @@ class _CantidadSelectorWidgetState extends State<CantidadSelectorWidget> {
             decoration: BoxDecoration(
               border: Border.all(
                 color: !enabledMinusButton && !enabledAddButton
-                    ? AppColors.grey500!
-                    : AppColors.black,
+                    ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)
+                    : Theme.of(context).colorScheme.onSurface,
               ),
               borderRadius: BorderRadius.circular(4),
             ),
@@ -119,8 +118,8 @@ class _CantidadSelectorWidgetState extends State<CantidadSelectorWidget> {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: !enabledMinusButton && !enabledAddButton
-                    ? AppColors.grey500!
-                    : AppColors.black,
+                    ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w500,
               ),
             ),

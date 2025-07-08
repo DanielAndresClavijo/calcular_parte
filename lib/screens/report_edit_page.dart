@@ -6,7 +6,7 @@ import 'package:calcular_parte/bloc/reporte_event.dart';
 import 'package:calcular_parte/bloc/reporte_state.dart';
 import 'package:calcular_parte/models/novedad_detalle.dart';
 import 'package:calcular_parte/models/seccion_data.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
+
 import 'package:calcular_parte/widgets/add_novedad_dialog.dart';
 import 'package:calcular_parte/widgets/detalle_novedad_widget.dart';
 import 'package:calcular_parte/widgets/edit_seccion_form_widget.dart';
@@ -28,7 +28,7 @@ class _ReportEditPageState extends State<ReportEditPage> {
   Widget build(BuildContext context) {
     final detalleDefault = const NovedadDetalleDefault();
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocSelector<ReporteBloc, ReporteState, SeccionData>(
         selector: (state) => state.secciones[widget.index],
         builder: (context, seccionData) {
@@ -42,8 +42,8 @@ class _ReportEditPageState extends State<ReportEditPage> {
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
-                backgroundColor: AppColors.white,
-                surfaceTintColor: AppColors.grey500,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                surfaceTintColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.12),
                 centerTitle: true,
                 actionsPadding: const EdgeInsets.only(right: 16.0),
                 actions: [const SizedBox.shrink()],
@@ -61,7 +61,7 @@ class _ReportEditPageState extends State<ReportEditPage> {
                 pinned: true,
                 delegate: _PersistentHeader(
                   child: Material(
-                    color: AppColors.white,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24, 0, 16, 0),
                       child: Row(

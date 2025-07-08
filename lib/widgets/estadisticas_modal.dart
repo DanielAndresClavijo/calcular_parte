@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 
 import 'package:calcular_parte/models/novedad_detalle.dart';
 import 'package:calcular_parte/models/seccion_data.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
+
 
 class EstadisticasModal extends StatefulWidget {
   final List<SeccionData> secciones;
@@ -35,9 +35,9 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -45,7 +45,7 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               boxShadow: [
                 BoxShadow(
@@ -57,13 +57,13 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
             ),
             child: Row(
               children: [
-                Icon(Icons.pie_chart, color: AppColors.primary),
+                Icon(Icons.pie_chart, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 12),
                 Text(
                   'Estadísticas de Novedades',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                     overflow: TextOverflow.ellipsis,
                   ),
                   maxLines: 1,
@@ -97,7 +97,7 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
                               Text(
                                 'Total de Novedades',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.grey500,
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -105,7 +105,7 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
                                 totalNovedades.toString(),
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.black,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                             ],
@@ -113,12 +113,12 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
+                              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
                               Icons.analytics,
-                              color: AppColors.primary,
+                              color: Theme.of(context).primaryColor,
                               size: 32,
                             ),
                           ),
@@ -169,7 +169,7 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
           'Distribución por Tipo',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 24),
@@ -224,10 +224,10 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
                 margin: const EdgeInsets.symmetric(vertical: 2),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
+                  color: isSelected ? Theme.of(context).primaryColor.withValues(alpha: 0.1) : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   border: isSelected ? Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.3),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                     width: 1,
                   ) : null,
                 ),
@@ -256,8 +256,8 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
                                 ? FontWeight.bold 
                                 : (isDefaultType ? FontWeight.w600 : FontWeight.w500),
                             color: isSelected 
-                                ? AppColors.primary 
-                                : (isDefaultType ? AppColors.grey500 : AppColors.black),
+                                ? Theme.of(context).primaryColor 
+                                : (isDefaultType ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6) : Theme.of(context).colorScheme.onSurface),
                           ),
                         ),
                       ),
@@ -265,7 +265,7 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
                         '${entry.value} ($percentage%)',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                          color: isSelected ? AppColors.primary : AppColors.grey500,
+                          color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -291,10 +291,10 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
         value: tipoEntry.value.toDouble(),
         title: tipoEntry.value > 0 ? tipoEntry.key : '',
         radius: isSelected ? 110 : 100, // Radio más grande para la sección seleccionada
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: AppColors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
       );
     }).toList();
@@ -302,12 +302,12 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
 
   Color _getColorForIndex(int index, bool isDefaultType) {
     if (isDefaultType) {
-      return AppColors.grey500!;
+      return Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
     }
     
     // Colores para tipos personalizados
     final colors = [
-      AppColors.primary,
+      Theme.of(context).primaryColor,
       Colors.blue,
       Colors.green,
       Colors.orange,
@@ -328,20 +328,20 @@ class _EstadisticasModalState extends State<EstadisticasModal> {
           Icon(
             Icons.pie_chart_outline,
             size: 64,
-            color: AppColors.grey500,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           const SizedBox(height: 16),
           Text(
             'No hay datos para mostrar',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppColors.grey500,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Agrega novedades a las secciones para ver estadísticas',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.grey500,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             textAlign: TextAlign.center,
           ),

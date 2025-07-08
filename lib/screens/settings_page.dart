@@ -5,7 +5,8 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:calcular_parte/bloc/reporte_bloc.dart';
 import 'package:calcular_parte/bloc/reporte_event.dart';
-import 'package:calcular_parte/theme/app_colors.dart';
+import 'package:calcular_parte/bloc/theme_cubit.dart';
+
 import 'package:calcular_parte/widgets/alert_dialog_base.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -16,12 +17,12 @@ class SettingsPage extends StatelessWidget {
     final resumenText = context.read<ReporteBloc>().getResumenText();
     
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Opciones'),
-        backgroundColor: AppColors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         surfaceTintColor: Colors.transparent,
-        foregroundColor: AppColors.black,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -38,7 +39,7 @@ class SettingsPage extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: AppColors.grey500),
+                        Icon(Icons.info_outline, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                         const SizedBox(width: 8),
                         Text(
                           'Información Guardada',
@@ -53,7 +54,7 @@ class SettingsPage extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.grey.shade300),
                       ),
@@ -96,6 +97,14 @@ class SettingsPage extends StatelessWidget {
             const SizedBox(height: 12),
             _buildActionCard(
               context,
+              icon: Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode,
+              title: 'Cambiar Tema',
+              subtitle: Theme.of(context).brightness == Brightness.dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro',
+              onTap: () => _toggleTheme(context),
+            ),
+            const SizedBox(height: 12),
+            _buildActionCard(
+              context,
               icon: Icons.delete_forever,
               title: 'Eliminar Datos',
               subtitle: 'Borrar todos los datos guardados',
@@ -122,25 +131,25 @@ class SettingsPage extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           icon,
-          color: isDestructive ? AppColors.error : AppColors.primary,
+          color: isDestructive ? Colors.red : Theme.of(context).primaryColor,
         ),
         title: Text(
           title,
           style: TextStyle(
-            color: isDestructive ? AppColors.error : AppColors.black,
+            color: isDestructive ? Colors.red : Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(
-            color: isDestructive ? AppColors.error : AppColors.grey500,
+            color: isDestructive ? Colors.red : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         trailing: Icon(
           Icons.arrow_forward_ios,
           size: 16,
-          color: isDestructive ? AppColors.error : AppColors.grey500,
+          color: isDestructive ? Colors.red : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         ),
         onTap: onTap,
       ),
@@ -163,6 +172,23 @@ class SettingsPage extends StatelessWidget {
         title: 'Reporte de Parte Carabineros',
         subject: 'Reporte de Parte',
         text: text,
+      ),
+    );
+  }
+
+  void _toggleTheme(BuildContext context) {
+    final themeCubit = context.read<ThemeCubit>();
+    themeCubit.toggleTheme();
+    
+    // Mostrar mensaje de confirmación
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          Theme.of(context).brightness == Brightness.dark 
+              ? 'Modo claro activado' 
+              : 'Modo oscuro activado',
+        ),
+        backgroundColor: Colors.green,
       ),
     );
   }
